@@ -420,23 +420,6 @@ document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
     if (e.key === 'Enter') validatePasscode();
 };
 
-function validatePasscode() {
-    const inputField = document.getElementById('gatekeeperPasscode');
-    const errorMsg = document.getElementById('loginError');
-    
-    if (inputField.value === VALID_PASSCODE) {
-        localStorage.setItem(PASSCODE_KEY, "true");
-        errorMsg.style.display = "none";
-        unlockTerminal();
-    } else {
-        errorMsg.style.display = "block";
-        inputField.value = "";
-        inputField.focus();
-        inputField.style.borderColor = "var(--badge-overdue)";
-        setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
-    }
-}
-
 function unlockTerminal() {
     document.body.classList.remove('app-locked');
     const overlay = document.getElementById('gatekeeperWindow');
