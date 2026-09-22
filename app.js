@@ -136,10 +136,29 @@ function checkInitialLockState() {
     }
 }
 
-document.getElementById('gatekeeperSubmitBtn').onclick = validatePasscode;
-document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
-    if (e.key === 'Enter') validatePasscode();
-};
+// Ensure DOM elements exist before binding listeners to prevent script breaks
+document.addEventListener("DOMContentLoaded", () => {
+    const submitBtn = document.getElementById('gatekeeperSubmitBtn');
+    const inputField = document.getElementById('gatekeeperPasscode');
+
+    if (submitBtn) {
+        submitBtn.removeAttribute('onclick'); // Wipe any broken inline attributes from HTML
+        submitBtn.onclick = validatePasscode;
+    }
+
+    if (inputField) {
+        inputField.removeAttribute('onkeydown'); // Wipe any broken inline attributes from HTML
+        inputField.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Stop native page reload behaviors on enter
+                validatePasscode();
+            }
+        };
+    }
+    
+    // Check state immediately on document load
+    checkInitialLockState();
+});
 
 function getActiveTierFromPasscode(passcode) {
     // 🔗 Check if the admin customized this specific passcode inside the local storage engine
@@ -154,20 +173,25 @@ function getActiveTierFromPasscode(passcode) {
 function validatePasscode() {
     const inputField = document.getElementById('gatekeeperPasscode');
     const errorMsg = document.getElementById('loginError');
+    
+    if (!inputField) return;
+    
     const enteredPass = inputField.value.trim();
     const verifiedTier = getActiveTierFromPasscode(enteredPass);
     
     if (verifiedTier) {
         localStorage.setItem(PASSCODE_KEY, "true");
         localStorage.setItem(LICENSED_TIER_KEY, verifiedTier);
-        errorMsg.style.display = "none";
+        if (errorMsg) errorMsg.style.display = "none";
         unlockTerminal(verifiedTier);
     } else {
-        errorMsg.style.display = "block";
+        if (errorMsg) errorMsg.style.display = "block";
         inputField.value = "";
         inputField.focus();
         inputField.style.borderColor = "var(--badge-overdue)";
-        setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
+        setTimeout(() => {
+            inputField.style.borderColor = "var(--border-color)";
+        }, 1000);
     }
 }
 
