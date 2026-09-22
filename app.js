@@ -273,11 +273,15 @@ document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
 function validatePasscode() {
     const inputField = document.getElementById('gatekeeperPasscode');
     const errorMsg = document.getElementById('loginError');
+    const enteredPass = inputField.value.trim();
     
-    if (inputField.value === VALID_PASSCODE) {
+    // 🔗 LINKING TO THE 3-TIER RECOGNITION DICTIONARY
+    if (TIERS[enteredPass]) {
+        const designatedTier = TIERS[enteredPass];
         localStorage.setItem(PASSCODE_KEY, "true");
+        localStorage.setItem(LICENSED_TIER_KEY, designatedTier);
         errorMsg.style.display = "none";
-        unlockTerminal();
+        unlockTerminal(designatedTier);
     } else {
         errorMsg.style.display = "block";
         inputField.value = "";
@@ -286,6 +290,7 @@ function validatePasscode() {
         setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
     }
 }
+
 
 function unlockTerminal() {
     document.body.classList.remove('app-locked');
