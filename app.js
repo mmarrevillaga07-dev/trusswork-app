@@ -247,7 +247,7 @@ function loadTasks() {
     };
 }
 
-// 9. Task Card Generation & Time-Delta Badging Rules
+// 9. Task Card Generation with Action Triggers & Time-Delta Badging Rules
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
@@ -269,16 +269,41 @@ function createTaskCard(task) {
     }
 
     card.innerHTML = `
-        <div class="card-directive">${task.directive}</div>
-        <div class="card-dept">${task.department}</div>
-        <div class="card-badge ${bClass}">${bText}</div>
-        <div style="font-size:0.75rem; margin-top:4px; color:var(--text-muted);">${new Date(task.deadline).toLocaleString()}</div>
+        <div style="position: relative; display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+            <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task">&times;</button>
+            <div class="card-directive" style="padding-right: 1.5rem;">${task.directive}</div>
+            <div class="card-dept">${task.department}</div>
+            <div class="card-badge ${bClass}">${bText}</div>
+            <div style="font-size:0.75rem; margin-top:4px; color:var(--text-muted);">${new Date(task.deadline).toLocaleString()}</div>
+        </div>
     `;
+
+    const deleteBtn = card.querySelector('.card-delete-trigger');
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        executeTaskDeletion(parseInt(e.target.dataset.id));
+    });
 
     card.addEventListener('dragstart', () => card.classList.add('dragging'));
     card.addEventListener('dragend', () => card.classList.remove('dragging'));
     return card;
 }
+
+// 🗑️ Core Transactional Handler: Direct Record Purge from IndexedDB Store
+function executeTaskDeletion(taskId) {
+    if (!confirm("Are you sure you want to permanently archive and delete this task directive from the system cache?")) return;
+
+    const transaction = db.transaction(["tasks"], "readwrite");
+    const store = transaction.objectStore("tasks");
+    
+    store.delete(taskId);
+    
+    transaction.oncomplete = () => {
+        console.log(`Trusswork Data Engine: Cleared task reference record ID [${taskId}] from persistent storage indices.`);
+        loadTasks();
+    };
+}
+
 
 // 10. Drag and Drop Interactive Subsystem Execution
 document.querySelectorAll('.board-column').forEach(col => {
