@@ -356,3 +356,7 @@ button, select {
     text-align: center;
     display: none;
 }
+#lockTerminalBtn:hover {
+    background-color: #b22222 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.4);
+}

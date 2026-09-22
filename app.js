@@ -1,15 +1,15 @@
 // 1. Multi-lingual Lookups (10 Most Common Languages)
 const i18n = {
-    en: { brand: "Trusswork™", kanban: "Kanban", grid: "Grid", mode: "Mode", export: "Export", signin: "Sign In", directive: "CORPORATE DIRECTIVE", department: "DEPARTMENT TRACK", deadline: "TARGET DEADLINE", commitTask: "Commit Task", pendingExecution: "PENDING EXECUTION", activeProcessing: "ACTIVE PROCESSING", completedLogs: "COMPLETED LOGS", mTotal: "Total Tasks", mPending: "Pending", mActive: "Active", mCompleted: "Completed", mOverdue: "Overdue", mNetwork: "Network Status" },
-    zh: { brand: "Trusswork™", kanban: "看板", grid: "网格", mode: "模式", export: "导出", signin: "登录", directive: "公司指令", department: "部门追踪", deadline: "目标截止日期", commitTask: "提交任务", pendingExecution: "待执行", activeProcessing: "进行中", completedLogs: "已完成日志", mTotal: "总任务", mPending: "待处理", mActive: "进行中", mCompleted: "已完成", mOverdue: "逾期", mNetwork: "网络状态" },
-    hi: { brand: "Trusswork™", kanban: "कानबान", grid: "ग्रिड", mode: "मोڈ", export: "निर्यात", signin: "साइन इन", directive: "कॉर्पोरेट निर्देश", department: "विभाग ट्रैक", deadline: "अंतिम समय सीमा", commitTask: "कार्य सौंपें", pendingExecution: "لंबित निष्पादन", activeProcessing: "सक्रिय प्रसंस्करण", completedLogs: "पूर्ण लॉग", mTotal: "कुल कार्य", mPending: "لंबित", mActive: "सक्रिय", mCompleted: "पूर्ण", mOverdue: "विलंबित", mNetwork: "नेटवर्क स्थिति" },
-    es: { brand: "Trusswork™", kanban: "Kanban", grid: "Cuadrícula", mode: "Modo", export: "Exportar", signin: "Ingresar", directive: "DIRECTIVA CORPORATIVA", department: "SEGUIMIENTO", deadline: "FECHA LÍMITE", commitTask: "Asignar Tarea", pendingExecution: "EJECUCIÓN PENDIENTE", activeProcessing: "PROCESAMIENTO ACTIVO", completedLogs: "REGISTROS COMPLETADOS", mTotal: "Tareas Totales", mPending: "Pendientes", mActive: "Activas", mCompleted: "Completadas", mOverdue: "Vencidas", mNetwork: "Estado de Red" },
-    fr: { brand: "Trusswork™", kanban: "Kanban", grid: "Grille", mode: "Mode", export: "Exporter", signin: "Se connecter", directive: "DIRECTIVE D'ENTREPRISE", department: "SUIVI", deadline: "DATE LIMITE", commitTask: "Valider", pendingExecution: "EXÉCUTION EN ATTENTE", activeProcessing: "TRAITEMENT ACTIF", completedLogs: "JOURNAUX TERMINÉS", mTotal: "Total", mPending: "En attente", mActive: "Actives", mCompleted: "Terminées", mOverdue: "En retard", mNetwork: "État du réseau" },
-    ar: { brand: "Trusswork™", kanban: "كانبان", grid: "شبكة", mode: "وضع", export: "تصدير", signin: "تسجيل الدخول", directive: "التوجيه المؤسسي", department: "مسار القسم", deadline: "الموعد النهائي", commitTask: "تنفيذ المهمة", pendingExecution: "في انتظار التنفيذ", activeProcessing: "المعالجة النشطة", completedLogs: "السجلات المكتملة", mTotal: "إجمالي المهام", mPending: "معلق", mActive: "نشط", mCompleted: "مكتمل", mOverdue: "متأخر", mNetwork: "حالة الشبكة" },
-    bn: { brand: "Trusswork™", kanban: "কানবান", grid: "গ্রিড", mode: "মোড", export: "রপ্তানি", signin: "সাইন ইন", directive: "কর্পোরেট নির্দেশিকা", department: "বিভাগ ট্র্যাক", deadline: "টার্গেট ডেডলাইন", commitTask: "টাস্ক সাবমিট", pendingExecution: "অপেক্ষমান সম্পাদন", activeProcessing: "সक्रिय প্রক্রিয়াকরণ", completedLogs: "সম্পন্ন লগ", mTotal: "মোট টাস্ক", mPending: "অপেক্ষমান", mActive: "সক্রিয়", mCompleted: "সম্পন্ন", mOverdue: "অতীত ডেডলাইন", mNetwork: "নেটওয়ার্ক স্ট্যাটاس" },
-    pt: { brand: "Trusswork™", kanban: "Kanban", grid: "Grade", mode: "Modo", export: "Exportar", signin: "Entrar", directive: "DIRETRIZ CORPORATIVA", department: "ACOMPANHAMENTO", deadline: "PRAZO LIMITE", commitTask: "Confirmar", pendingExecution: "EXECUÇÃO PENDENTE", activeProcessing: "PROCESSAMENTO ATIVO", completedLogs: "REGISTROS CONCLUÍDOS", mTotal: "Total", mPending: "Pendentes", mActive: "Ativas", mCompleted: "Concluídas", mOverdue: "Atrasadas", mNetwork: "Status da Rede" },
-    ru: { brand: "Trusswork™", kanban: "Канбан", grid: "Сетка", mode: "Режим", export: "Экспорт", signin: "Войти", directive: "КОРПОРАТИВНАЯ ДИРЕКТИВА", department: "ОТДЕЛ", deadline: "СРОК ВЫПОЛНЕНИЯ", commitTask: "Создать задачу", pendingExecution: "ОЖИДАЕТ ВЫПОЛНЕНИЯ", activeProcessing: "В РАБОТЕ", completedLogs: "ЗАВЕРШЕННЫЕ", mTotal: "Всего задач", mPending: "В ожидании", mActive: "В работе", mCompleted: "Завершено", mOverdue: "Просрочено", mNetwork: "Статус сети" },
-    ur: { brand: "Trusswork™", kanban: "کانبان", grid: "گرڈ", mode: "موڈ", export: "ایکسپورٹ", signin: "سائن ان", directive: "کارپوریٹ ہدایت", department: "شعبہ ٹریک", deadline: "آخری تاریخ", commitTask: "ٹاسک جمع کریں", pendingExecution: "التواء عملدرآمد", activeProcessing: "فعال پروسیسنگ", completedLogs: "مکمل لاگز", mTotal: "کل ٹاسکس", mPending: "التواء", mActive: "فعال", mCompleted: "مکمل", mOverdue: "تاخیر شدہ", mNetwork: "نیٹ ورک کی صورتحال" }
+    en: { brand: "Trusswork™", kanban: "Kanban", grid: "Grid", mode: "Mode", export: "Export", signin: "Sign In", directive: "CORPORATE DIRECTIVE", department: "DEPARTMENT TRACK", deadline: "TARGET DEADLINE", commitTask: "Commit Task", pendingExecution: "PENDING EXECUTION", activeProcessing: "ACTIVE PROCESSING", completedLogs: "COMPLETED LOGS", mTotal: "Total Tasks", mPending: "Pending", mActive: "Active", mCompleted: "Completed", mOverdue: "Overdue", mNetwork: "Network Status",lockApp: "Lock Terminal" },
+    zh: { brand: "Trusswork™", kanban: "看板", grid: "网格", mode: "模式", export: "导出", signin: "登录", directive: "公司指令", department: "部门追踪", deadline: "目标截止日期", commitTask: "提交任务", pendingExecution: "待执行", activeProcessing: "进行中", completedLogs: "已完成日志", mTotal: "总任务", mPending: "待处理", mActive: "进行中", mCompleted: "已完成", mOverdue: "逾期", mNetwork: "网络状态", lockApp: "锁定终端" },
+    hi: { brand: "Trusswork™", kanban: "कानबान", grid: "ग्रिड", mode: "मोڈ", export: "निर्यात", signin: "साइन इन", directive: "कॉर्पोरेट निर्देश", department: "विभाग ट्रैक", deadline: "अंतिम समय सीमा", commitTask: "कार्य सौंपें", pendingExecution: "لंबित निष्पादन", activeProcessing: "सक्रिय प्रसंस्करण", completedLogs: "पूर्ण लॉग", mTotal: "कुल कार्य", mPending: "لंबित", mActive: "सक्रिय", mCompleted: "पूर्ण", mOverdue: "विलंबित", mNetwork: "नेटवर्क स्थिति", lockApp: "टर्मिनल लॉक करें" },
+    es: { brand: "Trusswork™", kanban: "Kanban", grid: "Cuadrícula", mode: "Modo", export: "Exportar", signin: "Ingresar", directive: "DIRECTIVA CORPORATIVA", department: "SEGUIMIENTO", deadline: "FECHA LÍMITE", commitTask: "Asignar Tarea", pendingExecution: "EJECUCIÓN PENDIENTE", activeProcessing: "PROCESAMIENTO ACTIVO", completedLogs: "REGISTROS COMPLETADOS", mTotal: "Tareas Totales", mPending: "Pendientes", mActive: "Activas", mCompleted: "Completadas", mOverdue: "Vencidas", mNetwork: "Estado de Red", lockApp: "Bloquear Terminal" },
+    fr: { brand: "Trusswork™", kanban: "Kanban", grid: "Grille", mode: "Mode", export: "Exporter", signin: "Se connecter", directive: "DIRECTIVE D'ENTREPRISE", department: "SUIVI", deadline: "DATE LIMITE", commitTask: "Valider", pendingExecution: "EXÉCUTION EN ATTENTE", activeProcessing: "TRAITEMENT ACTIF", completedLogs: "JOURNAUX TERMINÉS", mTotal: "Total", mPending: "En attente", mActive: "Actives", mCompleted: "Terminées", mOverdue: "En retard", mNetwork: "État du réseau", lockApp: "Verrouiller le terminal" },
+    ar: { brand: "Trusswork™", kanban: "كانبان", grid: "شبكة", mode: "وضع", export: "تصدير", signin: "تسجيل الدخول", directive: "التوجيه المؤسسي", department: "مسار القسم", deadline: "الموعد النهائي", commitTask: "تنفيذ المهمة", pendingExecution: "في انتظار التنفيذ", activeProcessing: "المعالجة النشطة", completedLogs: "السجلات المكتملة", mTotal: "إجمالي المهام", mPending: "معلق", mActive: "نشط", mCompleted: "مكتمل", mOverdue: "متأخر", mNetwork: "حالة الشبكة", lockApp: "قفل النهاية" },
+    bn: { brand: "Trusswork™", kanban: "কানবান", grid: "গ্রিড", mode: "মোড", export: "রপ্তানি", signin: "সাইন ইন", directive: "কর্পোরেট নির্দেশিকা", department: "বিভাগ ট্র্যাক", deadline: "টার্গেট ডেডলাইন", commitTask: "টাস্ক সাবমিট", pendingExecution: "অপেক্ষমান সম্পাদন", activeProcessing: "সक्रिय প্রক্রিয়াকরণ", completedLogs: "সম্পন্ন লগ", mTotal: "মোট টাস্ক", mPending: "অপেক্ষমান", mActive: "সক্রিয়", mCompleted: "সম্পন্ন", mOverdue: "অতীত ডেডলাইন", mNetwork: "নেটওয়ার্ক স্ট্যাটاس", lockApp: "টার্মিনাল লক করুন" },
+    pt: { brand: "Trusswork™", kanban: "Kanban", grid: "Grade", mode: "Modo", export: "Exportar", signin: "Entrar", directive: "DIRETRIZ CORPORATIVA", department: "ACOMPANHAMENTO", deadline: "PRAZO LIMITE", commitTask: "Confirmar", pendingExecution: "EXECUÇÃO PENDENTE", activeProcessing: "PROCESSAMENTO ATIVO", completedLogs: "REGISTROS CONCLUÍDOS", mTotal: "Total", mPending: "Pendentes", mActive: "Ativas", mCompleted: "Concluídas", mOverdue: "Atrasadas", mNetwork: "Status da Rede", lockApp: "Bloquear Terminal" },
+    ru: { brand: "Trusswork™", kanban: "Канбан", grid: "Сетка", mode: "Режим", export: "Экспорт", signin: "Войти", directive: "КОРПОРАТИВНАЯ ДИРЕКТИВА", department: "ОТДЕЛ", deadline: "СРОК ВЫПОЛНЕНИЯ", commitTask: "Создать задачу", pendingExecution: "ОЖИДАЕТ ВЫПОЛНЕНИЯ", activeProcessing: "В РАБОТЕ", completedLogs: "ЗАВЕРШЕННЫЕ", mTotal: "Всего задач", mPending: "В ожидании", mActive: "В работе", mCompleted: "Завершено", mOverdue: "Просрочено", mNetwork: "Статус сети", lockApp: "Заблокировать терминал" },
+    ur: { brand: "Trusswork™", kanban: "کانبان", grid: "گرڈ", mode: "موڈ", export: "ایکسپورٹ", signin: "سائن ان", directive: "کارپوریٹ ہدایت", department: "شعبہ ٹریک", deadline: "آخری تاریخ", commitTask: "ٹاسک جمع کریں", pendingExecution: "التواء عملدرآمد", activeProcessing: "فعال پروسیسنگ", completedLogs: "مکمل لاگز", mTotal: "کل ٹاسکس", mPending: "التواء", mActive: "فعال", mCompleted: "مکمل", mOverdue: "تاخیر شدہ", mNetwork: "نیٹ ورک کی صورتحال", lockApp: "ٹرمینل کو لاک کریں" }
 };
 
 let currentLang = 'en';
@@ -25,8 +25,38 @@ request.onupgradeneeded = (e) => {
 };
 request.onsuccess = (e) => { 
     db = e.target.result; 
-    loadTasks(); 
+    
+    // Check if store is empty, if yes, bootstrap database with realistic records
+    const checkTransaction = db.transaction("tasks", "readonly");
+    const countRequest = checkTransaction.objectStore("tasks").count();
+    
+    countRequest.onsuccess = () => {
+        if (countRequest.result === 0) {
+            console.log("Trusswork Data Engine: Empty cache registry recognized. Seeding starter corporate directives...");
+            bootstrapMockTasks();
+        } else {
+            loadTasks();
+        }
+    };
 };
+
+function bootstrapMockTasks() {
+    const mockData = [
+        { directive: "System Operational Sync", department: "Operations", status: "pending", deadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 16) },
+        { directive: "Security Architecture Audit", department: "Security", status: "active", deadline: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString().slice(0, 16) },
+        { directive: "Database Cluster Maintenance", department: "Engineering", status: "completed", deadline: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16) }
+    ];
+
+    const transaction = db.transaction(["tasks"], "readwrite");
+    const store = transaction.objectStore("tasks");
+    
+    mockData.forEach(task => store.add(task));
+    transaction.oncomplete = () => {
+        console.log("Trusswork Data Engine: Mock data seeded successfully.");
+        loadTasks();
+    };
+}
+
 
 // 3. Register Service Worker Environment
 if ('serviceWorker' in navigator) {
@@ -57,17 +87,19 @@ document.getElementById('viewGridBtn').onclick = () => {
     document.getElementById('viewKanbanBtn').classList.remove('active');
 };
 
-// 4. Gatekeeper Lock Screen Terminal Validation Subsystem
+// 4. Gatekeeper Lock Screen Terminal Validation, Manual Log Out, & 15-Min Inactivity Monitor
 const PASSCODE_KEY = "TrussworkAuthorizedToken";
-const VALID_PASSCODE = "LogicMinds2026"; // 💡 Set your secret corporate passcode here
+const VALID_PASSCODE = "LogicMinds2026";
+let inactivityTimeout;
 
 function checkInitialLockState() {
-    // Check if browser holds a previously validated terminal session token
     if (localStorage.getItem(PASSCODE_KEY) === "true") {
         unlockTerminal();
     }
 }
 
+// Manual Lock Event Binding
+document.getElementById('lockTerminalBtn').onclick = lockTerminal;
 document.getElementById('gatekeeperSubmitBtn').onclick = validatePasscode;
 document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
     if (e.key === 'Enter') validatePasscode();
@@ -85,8 +117,6 @@ function validatePasscode() {
         errorMsg.style.display = "block";
         inputField.value = "";
         inputField.focus();
-        
-        // Brief visual border flash to alert user of access denial
         inputField.style.borderColor = "var(--badge-overdue)";
         setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
     }
@@ -97,7 +127,53 @@ function unlockTerminal() {
     const overlay = document.getElementById('gatekeeperWindow');
     overlay.style.opacity = "0";
     setTimeout(() => { overlay.style.display = "none"; }, 300);
+    
+    // Start tracking inactivity timers once app is open
+    resetInactivityTimer();
+    setupInactivityListeners();
 }
+
+function lockTerminal() {
+    localStorage.removeItem(PASSCODE_KEY);
+    document.body.classList.add('app-locked');
+    const overlay = document.getElementById('gatekeeperWindow');
+    overlay.style.display = "flex";
+    setTimeout(() => { overlay.style.opacity = "1"; }, 10);
+    document.getElementById('gatekeeperPasscode').value = "";
+    
+    // Kill activity background listeners when locked
+    removeInactivityListeners();
+    clearTimeout(inactivityTimeout);
+}
+
+// ⏳ Background Inactivity Tracking Mechanics (15 Minutes)
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimeout);
+    // 15 minutes = 15 * 60 * 1000 milliseconds = 900,000ms
+    inactivityTimeout = setTimeout(() => {
+        console.log("Terminal inactive for 15 minutes. Executing automatic security logout.");
+        lockTerminal();
+    }, 900000); 
+}
+
+function setupInactivityListeners() {
+    window.addEventListener('mousemove', resetInactivityTimer);
+    window.addEventListener('keydown', resetInactivityTimer);
+    window.addEventListener('click', resetInactivityTimer);
+    window.addEventListener('scroll', resetInactivityTimer);
+    window.addEventListener('touchstart', resetInactivityTimer);
+}
+
+function removeInactivityListeners() {
+    window.removeEventListener('mousemove', resetInactivityTimer);
+    window.removeEventListener('keydown', resetInactivityTimer);
+    window.removeEventListener('click', resetInactivityTimer);
+    window.removeEventListener('scroll', resetInactivityTimer);
+    window.removeEventListener('touchstart', resetInactivityTimer);
+}
+
+window.addEventListener('DOMContentLoaded', checkInitialLockState);
+
 
 // Check lock configuration state immediately upon runtime initialization
 window.addEventListener('DOMContentLoaded', checkInitialLockState);
