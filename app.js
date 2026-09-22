@@ -138,6 +138,16 @@ function checkInitialLockState() {
 
 // Ensure DOM elements exist before binding listeners to prevent script breaks
 document.addEventListener("DOMContentLoaded", () => {
+    // FIX: If we've already initialized the buttons once, stop immediately to prevent doubling
+    if (window.appInitialized) return;
+    window.appInitialized = true;
+    const duplicateCheck = document.querySelectorAll('.your-button-class');
+    if (duplicateCheck.length > 4) {
+        // If there are more buttons present than expected, refresh the container node
+        window.location.reload(); 
+    }
+});
+
     const submitBtn = document.getElementById('gatekeeperSubmitBtn');
     const inputField = document.getElementById('gatekeeperPasscode');
 
