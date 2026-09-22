@@ -301,3 +301,69 @@ document.querySelectorAll('.board-column').forEach(col => {
 // Auto-evaluate timelines every 30 seconds 
 setInterval(loadTasks, 30000);
 updateNetworkStatus();
+// ==========================================================================
+// 📊 ENTERPRISE INTEGRATION: DATA STREAM EXPORT ROUTINE (EXCEL/CSV PIPELINE)
+// ==========================================================================
+document.getElementById('exportBtn').onclick = exportDatabaseToCSV;
+
+function exportDatabaseToCSV() {
+    if (!db) {
+        alert("Database connection is not fully initialized. Please try again.");
+        return;
+    }
+
+    const taskList = [];
+    const transaction = db.transaction("tasks", "readonly");
+    const store = transaction.objectStore("tasks");
+
+    store.openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+            taskList.push(cursor.value);
+            cursor.continue();
+        } else {
+            // Callback execution once all tasks have been gathered from IndexedDB cache
+            generateCSVDownloadStream(taskList);
+        }
+    };
+}
+
+function generateCSVDownloadStream(tasks) {
+    if (tasks.length === 0) {
+        alert("There are currently no documented tasks inside the terminal cache storage registry to export.");
+        return;
+    }
+
+    // 1. Configure localized document structured array headers 
+    const headers = ["Task ID", "Corporate Directive", "Department Track", "Workflow Status", "Target Deadline String"];
+    
+    // 2. Map and escape special character sequences in cell columns safely
+    const csvRows = [
+        headers.join(","), // Header row definition
+        ...tasks.map(task => [
+            task.id,
+            `"${task.directive.replace(/"/g, '""')}"`,
+            `"${task.department.replace(/"/g, '""')}"`,
+            `"${task.status.toUpperCase()}"`,
+            `"${new Date(task.deadline).toLocaleString()}"`
+        ].join(","))
+    ];
+
+    // 3. Compile lines and configure standard raw UTF-8 binary stream data container
+    const csvContent = "\uFEFF" + csvRows.join("\n"); // Include BOM tag parameters for flawless native Microsoft Excel column auto-parsing
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    // 4. Construct a virtual anchor object element framework to force programmatic file save handling
+    const virtualLink = document.createElement("a");
+    const fileTimestamp = new Date().toISOString().slice(0, 10);
+    
+    virtualLink.href = URL.createObjectURL(blob);
+    virtualLink.setAttribute("download", `Trusswork_Master_Directives_Export_${fileTimestamp}.csv`);
+    virtualLink.style.visibility = 'hidden';
+    
+    document.body.appendChild(virtualLink);
+    virtualLink.click();
+    document.body.removeChild(virtualLink);
+    
+    console.log(`Trusswork Data Engine: Successfully exported ${tasks.length} corporate records directly into download stream logs.`);
+}
