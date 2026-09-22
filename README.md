@@ -31,10 +31,18 @@ trusswork-app/
 ├── styles.css        # Responsive layouts, layout boundaries, & dark/light theme tokens
 ├── app.js            # Translation indices, Inactivity loops, IndexedDB, & CSV export engines
 ├── sw.js             # Service Worker orchestration handling offline data asset caching
-└── manifest.json     # Configuration file enabling native cross-platform OS installation
-```
+├── manifest.json     # Configuration file enabling native cross-platform OS installation
+│
+├── corporate-legal/  # 📁 Enterprise Compliance Documentation Logs
+│   ├── Trusswork_Ownership_Declaration.pdf   # Genesis proof of IP asset ownership
+│   └── Trusswork_Terms_of_Service.pdf        # Offline data caching liability disclaimers
+│
+└── sales-playbooks/  # 📁 NEW: B2B Growth Strategy & Billing Assets
+    ├── Trusswork_B2B_Pitch_Sequence.pdf      # Automated 3-part executive email series
+    ├── Trusswork_Pitch_Deck_Outline.pdf      # Slide-by-slide sales presentation framework
+    └── Trusswork_Commercial_Invoice_Template.pdf # Refined seat volume itemized bill sheet
 
----
+```
 
 ## 🚀 How to Run and Install
 Because Progressive Web Apps require secure hosting validation (`HTTPS` or `http://localhost`), do not execute by double-clicking the raw files.
