@@ -292,7 +292,7 @@ function validatePasscode() {
 }
 
 
-function unlockTerminal() {
+function unlockTerminal(tier) {
     document.body.classList.remove('app-locked');
     const overlay = document.getElementById('gatekeeperWindow');
     overlay.style.opacity = "0";
