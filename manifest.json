@@ -1,0 +1,17 @@
+{
+    "short_name": "Trusswork",
+    "name": "Trusswork™ Enterprise Task Management",
+    "icons": [
+        {
+            "src": "https://flaticon.com",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": "./index.html",
+    "background_color": "#f8f9fa",
+    "theme_color": "#0d6efd",
+    "display": "standalone",
+    "orientation": "any"
+}

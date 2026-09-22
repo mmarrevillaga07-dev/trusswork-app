@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trusswork™ - Enterprise Task Management</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <header class="app-header">
+        <div class="brand-container">
+            <span class="brand-logo" data-i18n="brand">Trusswork™</span>
+            <span class="brand-sub">by LogicMinds Tech</span>
+        </div>
+        <div class="controls-container">
+            <button id="viewKanbanBtn" class="toggle-btn active" data-i18n="kanban">Kanban</button>
+            <button id="viewGridBtn" class="toggle-btn" data-i18n="grid">Grid</button>
+            <select id="langSelect" class="styled-select">
+                <option value="en">English</option>
+                <option value="zh">Mandarin</option>
+                <option value="hi">Hindi</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="ar">Arabic</option>
+                <option value="bn">Bengali</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="ur">Urdu</option>
+            </select>
+            <button id="themeToggleBtn" class="action-btn" data-i18n="mode">Mode</button>
+            <button id="exportBtn" class="action-btn" data-i18n="export">Export</button>
+            <button id="authBtn" class="auth-btn" data-i18n="signin">Sign In</button>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <section class="task-form-panel">
+            <div class="input-group">
+                <label data-i18n="directive">CORPORATE DIRECTIVE</label>
+                <select id="directiveInput">
+                    <option value="System Operational Sync">System Operational Sync</option>
+                    <option value="Database Cluster Maintenance">Database Cluster Maintenance</option>
+                    <option value="Security Architecture Audit">Security Architecture Audit</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label data-i18n="department">DEPARTMENT TRACK</label>
+                <select id="departmentInput">
+                    <option value="Engineering">Engineering</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Security">Security</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label data-i18n="deadline">TARGET DEADLINE</label>
+                <input type="datetime-local" id="deadlineInput">
+            </div>
+            <button id="commitTaskBtn" data-i18n="commitTask">Commit Task</button>
+        </section>
+
+        <section id="boardContainer" class="board-container kanban-view">
+            <div class="board-column" data-status="pending">
+                <h3 data-i18n="pendingExecution">PENDING EXECUTION</h3>
+                <div class="card-list" id="pendingList"></div>
+            </div>
+            <div class="board-column" data-status="active">
+                <h3 data-i18n="activeProcessing">ACTIVE PROCESSING</h3>
+                <div class="card-list" id="activeList"></div>
+            </div>
+            <div class="board-column" data-status="completed">
+                <h3 data-i18n="completedLogs">COMPLETED LOGS</h3>
+                <div class="card-list" id="completedList"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="metrics-footer">
+        <div class="metrics-grid">
+            <div class="metric-card"><span data-i18n="mTotal">Total Tasks</span>: <strong id="metricTotal">0</strong></div>
+            <div class="metric-card"><span data-i18n="mPending">Pending</span>: <strong id="metricPending">0</strong></div>
+            <div class="metric-card"><span data-i18n="mActive">Active</span>: <strong id="metricActive">0</strong></div>
+            <div class="metric-card"><span data-i18n="mCompleted">Completed</span>: <strong id="metricCompleted">0</strong></div>
+            <div class="metric-card"><span data-i18n="mOverdue">Overdue</span>: <strong id="metricOverdue" class="overdue-count">0</strong></div>
+            <div class="metric-card"><span data-i18n="mNetwork">Network Status</span>: <strong id="metricNetwork">Online</strong></div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
