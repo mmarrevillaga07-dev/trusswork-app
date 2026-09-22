@@ -37,10 +37,11 @@ trusswork-app/
 │   ├── Trusswork_Ownership_Declaration.pdf   # Genesis proof of IP asset ownership
 │   └── Trusswork_Terms_of_Service.pdf        # Offline data caching liability disclaimers
 │
-└── sales-playbooks/  # 📁 NEW: B2B Growth Strategy & Billing Assets
+└── sales-playbooks/  # 📁 B2B Growth Strategy & Billing Assets
     ├── Trusswork_B2B_Pitch_Sequence.pdf      # Automated 3-part executive email series
     ├── Trusswork_Pitch_Deck_Outline.pdf      # Slide-by-slide sales presentation framework
-    └── Trusswork_Commercial_Invoice_Template.pdf # Refined seat volume itemized bill sheet
+    ├── Trusswork_Commercial_Invoice_Template.pdf # Refined seat volume itemized bill sheet
+    └── Trusswork_FAQs.pdf                    # NEW: Master objection handling & FAQ guide
 
 ```
 
