@@ -420,17 +420,6 @@ document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
     if (e.key === 'Enter') validatePasscode();
 };
 
-function unlockTerminal() {
-    document.body.classList.remove('app-locked');
-    const overlay = document.getElementById('gatekeeperWindow');
-    overlay.style.opacity = "0";
-    setTimeout(() => { overlay.style.display = "none"; }, 300);
-    
-    // Start tracking inactivity timers once app is open
-    resetInactivityTimer();
-    setupInactivityListeners();
-}
-
 function lockTerminal() {
     localStorage.removeItem(PASSCODE_KEY);
     document.body.classList.add('app-locked');
