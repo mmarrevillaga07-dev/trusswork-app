@@ -168,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Check state immediately on document load
     checkInitialLockState();
-});
 
 function getActiveTierFromPasscode(passcode) {
     // 🔗 Check if the admin customized this specific passcode inside the local storage engine
