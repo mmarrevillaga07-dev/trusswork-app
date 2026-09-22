@@ -112,16 +112,156 @@ document.getElementById('viewGridBtn').onclick = () => {
     document.getElementById('viewKanbanBtn').classList.remove('active');
 };
 
-// 4. Gatekeeper Lock Screen Terminal Validation, Manual Log Out, & 15-Min Inactivity Monitor
+// ==========================================================================
+// 🔒 SECTION 4: 3-TIER PASSCODE GATEKEEPER & INACTIVITY MONITOR ENGINE
+// ==========================================================================
 const PASSCODE_KEY = "TrussworkAuthorizedToken";
-const VALID_PASSCODE = "LogicMinds2026";
+const LICENSED_TIER_KEY = "TrussworkLicensedTier";
+
+// Define the 3 explicit corporate passwords
+const TIERS = {
+    "TrussworkCore2026": "CORE",
+    "TrussworkScale2026": "SCALE",
+    "TrussworkEnterprise2026": "ENTERPRISE"
+};
+
 let inactivityTimeout;
 
 function checkInitialLockState() {
     if (localStorage.getItem(PASSCODE_KEY) === "true") {
-        unlockTerminal();
+        const activeTier = localStorage.getItem(LICENSED_TIER_KEY);
+        unlockTerminal(activeTier);
     }
 }
+
+document.getElementById('gatekeeperSubmitBtn').onclick = validatePasscode;
+document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
+    if (e.key === 'Enter') validatePasscode();
+};
+
+function validatePasscode() {
+    const inputField = document.getElementById('gatekeeperPasscode');
+    const errorMsg = document.getElementById('loginError');
+    const enteredPass = inputField.value.trim();
+    
+    if (TIERS[enteredPass]) {
+        const designatedTier = TIERS[enteredPass];
+        localStorage.setItem(PASSCODE_KEY, "true");
+        localStorage.setItem(LICENSED_TIER_KEY, designatedTier);
+        errorMsg.style.display = "none";
+        unlockTerminal(designatedTier);
+    } else {
+        errorMsg.style.display = "block";
+        inputField.value = "";
+        inputField.focus();
+        inputField.style.borderColor = "var(--badge-overdue)";
+        setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
+    }
+}
+
+function unlockTerminal(tier) {
+    document.body.classList.remove('app-locked');
+    const overlay = document.getElementById('gatekeeperWindow');
+    overlay.style.opacity = "0";
+    setTimeout(() => { overlay.style.display = "none"; }, 300);
+    
+    // Enforce tier access rules across UI elements
+    enforceTierLayoutRestrictions(tier);
+}
+
+function enforceTierLayoutRestrictions(tier) {
+    const exportBtn = document.getElementById('exportBtn');
+    const lockBtn = document.getElementById('lockTerminalBtn');
+    
+    console.log(`Trusswork Data Engine: Initializing security workspace under [${tier}] authorization credentials.`);
+
+    if (tier === "CORE") {
+        // 1. Core Track Rules: Hide Export, Hide Lock App Button, Kill background timers
+        if (exportBtn) exportBtn.style.display = "none";
+        if (lockBtn) lockBtn.style.display = "none";
+        removeInactivityListeners();
+        clearTimeout(inactivityTimeout);
+    } 
+    else if (tier === "SCALE") {
+        // 2. Scale Operational Rules: Show Export & Lock, Turn on 15-Min Inactivity Timer
+        if (exportBtn) exportBtn.style.display = "block";
+        if (lockBtn) lockBtn.style.display = "block";
+        resetInactivityTimer();
+        setupInactivityListeners();
+        
+        // Remove Enterprise SSO override indicator if it exists
+        removeSSOBanner();
+    } 
+    else if (tier === "ENTERPRISE") {
+        // 3. Enterprise Hub Rules: Open full suite + deploy SSO verification badge
+        if (exportBtn) exportBtn.style.display = "block";
+        if (lockBtn) lockBtn.style.display = "block";
+        resetInactivityTimer();
+        setupInactivityListeners();
+        
+        injectSSOBadge();
+    }
+}
+
+function lockTerminal() {
+    localStorage.removeItem(PASSCODE_KEY);
+    localStorage.removeItem(LICENSED_TIER_KEY);
+    document.body.classList.add('app-locked');
+    const overlay = document.getElementById('gatekeeperWindow');
+    overlay.style.display = "flex";
+    setTimeout(() => { overlay.style.opacity = "1"; }, 10);
+    document.getElementById('gatekeeperPasscode').value = "";
+    
+    removeInactivityListeners();
+    clearTimeout(inactivityTimeout);
+    removeSSOBanner();
+}
+
+// ⏳ Background Inactivity Tracking Mechanics (15 Minutes)
+function resetInactivityTimer() {
+    const activeTier = localStorage.getItem(LICENSED_TIER_KEY);
+    if (activeTier === "CORE") return; // Safety bailout for free accounts
+    
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(() => {
+        console.log("Terminal inactive for 15 minutes. Executing automatic security logout.");
+        lockTerminal();
+    }, 900000); 
+}
+
+function setupInactivityListeners() {
+    window.addEventListener('mousemove', resetInactivityTimer);
+    window.addEventListener('keydown', resetInactivityTimer);
+    window.addEventListener('click', resetInactivityTimer);
+    window.addEventListener('scroll', resetInactivityTimer);
+    window.addEventListener('touchstart', resetInactivityTimer);
+}
+
+function removeInactivityListeners() {
+    window.removeEventListener('mousemove', resetInactivityTimer);
+    window.removeEventListener('keydown', resetInactivityTimer);
+    window.removeEventListener('click', resetInactivityTimer);
+    window.removeEventListener('scroll', resetInactivityTimer);
+    window.removeEventListener('touchstart', resetInactivityTimer);
+}
+
+// Enterprise UI helpers
+function injectSSOBadge() {
+    if (document.getElementById('enterpriseSSOBadge')) return;
+    const header = document.querySelector('.brand-container');
+    const badge = document.createElement('span');
+    badge.id = "enterpriseSSOBadge";
+    badge.textContent = "SSO SECURED";
+    badge.style.cssText = "font-size:0.65rem; background:#0d6efd; color:white; padding:2px 6px; border-radius:10px; font-weight:bold; margin-left:8px; letter-spacing:0.05em;";
+    header.appendChild(badge);
+}
+
+function removeSSOBanner() {
+    const badge = document.getElementById('enterpriseSSOBadge');
+    if (badge) badge.remove();
+}
+
+window.addEventListener('DOMContentLoaded', checkInitialLockState);
 
 // Manual Lock Event Binding
 document.getElementById('lockTerminalBtn').onclick = lockTerminal;
