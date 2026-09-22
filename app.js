@@ -57,9 +57,51 @@ document.getElementById('viewGridBtn').onclick = () => {
     document.getElementById('viewKanbanBtn').classList.remove('active');
 };
 
-document.getElementById('authBtn').onclick = () => {
-    alert("SSO Module Hook: Redirecting securely to corporate Identity Gateway identity validation routing...");
+// 4. Gatekeeper Lock Screen Terminal Validation Subsystem
+const PASSCODE_KEY = "TrussworkAuthorizedToken";
+const VALID_PASSCODE = "LogicMinds2026"; // 💡 Set your secret corporate passcode here
+
+function checkInitialLockState() {
+    // Check if browser holds a previously validated terminal session token
+    if (localStorage.getItem(PASSCODE_KEY) === "true") {
+        unlockTerminal();
+    }
+}
+
+document.getElementById('gatekeeperSubmitBtn').onclick = validatePasscode;
+document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
+    if (e.key === 'Enter') validatePasscode();
 };
+
+function validatePasscode() {
+    const inputField = document.getElementById('gatekeeperPasscode');
+    const errorMsg = document.getElementById('loginError');
+    
+    if (inputField.value === VALID_PASSCODE) {
+        localStorage.setItem(PASSCODE_KEY, "true");
+        errorMsg.style.display = "none";
+        unlockTerminal();
+    } else {
+        errorMsg.style.display = "block";
+        inputField.value = "";
+        inputField.focus();
+        
+        // Brief visual border flash to alert user of access denial
+        inputField.style.borderColor = "var(--badge-overdue)";
+        setTimeout(() => inputField.style.borderColor = "var(--border-color)", 1000);
+    }
+}
+
+function unlockTerminal() {
+    document.body.classList.remove('app-locked');
+    const overlay = document.getElementById('gatekeeperWindow');
+    overlay.style.opacity = "0";
+    setTimeout(() => { overlay.style.display = "none"; }, 300);
+}
+
+// Check lock configuration state immediately upon runtime initialization
+window.addEventListener('DOMContentLoaded', checkInitialLockState);
+
 
 // 5. Add/Commit New Task Data Routine
 document.getElementById('commitTaskBtn').onclick = () => {

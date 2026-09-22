@@ -7,7 +7,25 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="light-mode">
+<body class="light-mode app-locked">
+
+    <!-- 🔒 THE GATEKEEPER SECURE WINDOW OVERLAY -->
+    <div id="gatekeeperWindow" class="gatekeeper-overlay">
+        <div class="gatekeeper-card">
+            <div class="gatekeeper-header">
+                <h2>Trusswork™</h2>
+                <p>by LogicMinds Tech</p>
+            </div>
+            <div class="gatekeeper-body">
+                <label for="gatekeeperPasscode">ENTER ENTERPRISE GATEKEEPER PASSCODE</label>
+                <input type="password" id="gatekeeperPasscode" placeholder="••••••••" autocomplete="current-password">
+                <div id="loginError" class="login-error-msg">Access Denied: Invalid Passcode</div>
+                <button id="gatekeeperSubmitBtn">Authorize Terminal Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP APP LAYOUT (Locked until authorized) -->
     <header class="app-header">
         <div class="brand-container">
             <span class="brand-logo" data-i18n="brand">Trusswork™</span>
@@ -30,7 +48,7 @@
             </select>
             <button id="themeToggleBtn" class="action-btn" data-i18n="mode">Mode</button>
             <button id="exportBtn" class="action-btn" data-i18n="export">Export</button>
-            <button id="authBtn" class="auth-btn" data-i18n="signin">Sign In</button>
+            <!-- 💡 Sign In button has been completely removed -->
         </div>
     </header>
 
