@@ -198,9 +198,16 @@ function validatePasscode() {
 function unlockTerminal(tier) {
     document.body.classList.remove('app-locked');
     const overlay = document.getElementById('gatekeeperWindow');
-    overlay.style.opacity = "0";
-    setTimeout(() => { overlay.style.display = "none"; }, 300);
+    if (overlay) {
+        overlay.style.opacity = "0";
+        setTimeout(() => { overlay.style.display = "none"; }, 300);
+    }
+    
     enforceTierLayoutRestrictions(tier);
+
+    // 💡 Add the inactivity timers here so they still track properly
+    if (typeof resetInactivityTimer === "function") resetInactivityTimer();
+    if (typeof setupInactivityListeners === "function") setupInactivityListeners();
 }
 
 // ==========================================================================
