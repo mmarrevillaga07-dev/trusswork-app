@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trusswork-cache-v1';
+const CACHE_NAME = 'trusswork-cache-v2'; // 💡 TIP: Increment this v2 -> v3 next time you update!
 const ASSETS = [
     './',
     './index.html',
@@ -15,9 +15,11 @@ self.addEventListener('install', (e) => {
             return cache.addAll(ASSETS);
         })
     );
+    // 🚀 FORCE NEW CODES IMMEDATELY WITHOUT WAITING FOR USER TO CLOSE TABS
+    self.skipWaiting(); 
 });
 
-// 2. Activate Event: Clears out old cache assets when updating version strings
+// 2. Activate Event: Clears out old cache assets and claims active tabs instantly
 self.addEventListener('activate', (e) => {
     e.waitUntil(
         caches.keys().then((keys) => {
@@ -29,6 +31,9 @@ self.addEventListener('activate', (e) => {
                     }
                 })
             );
+        }).then(() => {
+            // 🚀 Force the new service worker to take control of the open webpage right away
+            return self.clients.claim();
         })
     );
 });
@@ -37,9 +42,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
     e.respondWith(
         caches.match(e.request).then((cachedResponse) => {
-            // Return from local cache storage first, otherwise fetch over the network
             return cachedResponse || fetch(e.request).catch(() => {
-                // Optional fallback strategy when both cache and network fail (offline requests)
                 if (e.request.mode === 'navigate') {
                     return caches.match('./index.html');
                 }

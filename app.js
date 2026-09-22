@@ -58,12 +58,37 @@ function bootstrapMockTasks() {
 }
 
 
-// 3. Register Service Worker Environment
+// 3. Register Service Worker Environment with Auto-Reload Controller
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Registration Failed', err));
+        navigator.serviceWorker.register('sw.js').then((reg) => {
+            // Look out for any new updates while the app is open
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                if (installingWorker == null) return;
+                
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            console.log('New updates detected! The app will now reload seamlessly.');
+                        }
+                    }
+                };
+            };
+        }).catch(err => console.log('SW Registration Failed', err));
+    });
+
+    // 🚀 AUTOMATIC WEB REFRESH TRIGGER
+    // Fires when the new service worker calls self.skipWaiting() and self.clients.claim()
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+        }
     });
 }
+
 
 // 4. Global Action Event Listeners
 document.getElementById('langSelect').addEventListener('change', (e) => {
