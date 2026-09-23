@@ -615,32 +615,32 @@ function createTaskCard(task) {
     const editIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>`;
     const saveIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
 
-        // Update the Card Layout with reinforced structural width layout variables
-        card.innerHTML = `
-        <div style="position: relative; display: flex; flex-direction: column; gap: 0.5rem; width: 100%; min-width: 0; box-sizing: border-box; padding: 12px; padding-right: 3.5rem; flex-grow: 1;">
+    // 1. Fully-formed, robust HTML card injection with absolute sizing anchors
+    card.innerHTML = `
+        <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; padding-right: 50px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
             
-            <!-- Absolute Right-Aligned Action Box -->
-            <div style="position: absolute; right: 0.5rem; top: 0.5rem; display: flex; gap: 0.5rem; align-items: center; z-index: 10;">
-                <button class="card-edit-trigger" data-id="${task.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-normal, #fff); opacity: 0.8; transition: opacity 0.2s;">${editIcon}</button>
-                <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 2px; font-size: 1.3rem; line-height: 1; color: var(--text-normal, #fff); opacity: 0.6; transition: opacity 0.2s;">&times;</button>
+            <!-- Sleek Action Box: Absolute Right-Aligned -->
+            <div style="position: absolute; right: 8px; top: 12px; display: flex; gap: 10px; align-items: center; z-index: 99;">
+                <button class="card-edit-trigger" data-id="${task.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #ffffff; opacity: 0.7; transition: opacity 0.2s; width: 20px; height: 20px;">${editIcon}</button>
+                <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 2px; font-size: 20px; line-height: 1; color: #ffffff; opacity: 0.6; transition: opacity 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
             </div>
 
-            <!-- Main Task Body Fields (Reinforced Layout Block) -->
-            <div class="card-display-view" style="width: 100%; display: block; min-height: 1.2rem;">
-                <div class="card-directive" style="font-size: 0.95rem; font-weight: 500; color: var(--text-normal, #fff); line-height: 1.4; word-break: break-word; white-space: normal;">${task.directive || task.task || 'No Directive Text Provided'}</div>
+            <!-- Main Task Body Fields -->
+            <div class="card-display-view" style="width: 100%; display: block;">
+                <div class="card-directive" style="font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.4; word-break: break-word; white-space: normal;">${task.directive || task.task || 'Untitled Directive'}</div>
             </div>
             
             <div class="card-edit-view" style="display: none; width: 100%;">
-                <textarea class="card-directive-input" style="width: 100%; resize: vertical; padding: 6px; font-family: inherit; font-size: inherit; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${task.directive || task.task || ''}</textarea>
+                <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${task.directive || task.task || ''}</textarea>
             </div>
 
-            <div class="card-dept" style="font-size: 0.8rem; opacity: 0.7; color: var(--text-normal, #fff);">${task.department || 'General'}</div>
-            <div class="card-badge ${bClass}">${bText}</div>
+            <div class="card-dept" style="font-size: 13px; opacity: 0.6; color: #ffffff; margin-top: 2px;">${task.department || 'General'}</div>
+            <div class="card-badge ${bClass}" style="width: max-content; margin-top: 4px;">${bText}</div>
             
-            <!-- Bottom Footer: Core Created & Deadline Tracking Stamps -->
-            <div style="font-size: 0.72rem; color: var(--text-muted, #aaa); margin-top: 6px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; width: 100%;">
-                <div><span style="opacity: 0.6;">Created:</span> ${task.createdTimestamp ? new Date(task.createdTimestamp).toLocaleString() : new Date().toLocaleString()}</div>
-                <div><span style="opacity: 0.6;">Deadline:</span> ${new Date(task.deadline).toLocaleString()}</div>
+            <!-- Bottom Footer Trackers -->
+            <div style="font-size: 11px; color: #aaaaaa; margin-top: 8px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 6px; width: 100%;">
+                <div><span style="opacity: 0.5;">Created:</span> ${task.createdTimestamp ? new Date(task.createdTimestamp).toLocaleString() : new Date().toLocaleString()}</div>
+                <div><span style="opacity: 0.5;">Deadline:</span> ${new Date(task.deadline).toLocaleString()}</div>
             </div>
         </div>
     `;
