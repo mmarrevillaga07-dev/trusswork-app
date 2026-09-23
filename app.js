@@ -731,8 +731,8 @@ function createTaskCard(task) {
             
             // 3. UPDATE INDEXEDDB SO IT PERMANENTLY REMEMBERS THE DELETION
             if (typeof db !== 'undefined' && db) {
-                // LINE 643: Keep this line exactly as it is:
-if (typeof db !== 'undefined' && db) {
+                
+    if (typeof db !== 'undefined' && db) {
     try {
         const transaction = db.transaction(["tasks"], "readwrite");
         const store = transaction.objectStore("tasks");
@@ -799,7 +799,10 @@ document.querySelectorAll('.board-column').forEach(col => {
         };
         transaction.oncomplete = loadTasks;
     });
-});
+});   
+    return card;
+
+};
 
 // Auto-evaluate timelines every 30 seconds 
 setInterval(loadTasks, 30000);
@@ -962,4 +965,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-}
+
