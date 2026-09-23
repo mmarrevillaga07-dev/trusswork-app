@@ -641,17 +641,31 @@ function createTaskCard(task) {
             
             // 3. UPDATE INDEXEDDB SO IT PERMANENTLY REMEMBERS THE DELETION
             if (typeof db !== 'undefined' && db) {
-                try {
-                    const transaction = db.transaction(["tasks"], "readwrite");
-                    const store = transaction.objectStore("tasks");
-                    
-                    // Mark status as archived so your load loop skips it on main lanes
-                    task.status = 'archived'; 
-                    store.put(task);
-                    console.log("Task status updated to 'archived' inside IndexedDB.");
-                } catch (error) {
-                    console.error("Failed to update database record status:", error);
-                }
+                // LINE 643: Keep this line exactly as it is:
+if (typeof db !== 'undefined' && db) {
+    try {
+        const transaction = db.transaction(["tasks"], "readwrite");
+        const store = transaction.objectStore("tasks");
+        
+        // 1. First change the status of the task object in runtime memory
+        task.status = 'archived';
+        
+        // 2. Now save that updated task object safely into IndexedDB
+        const request = store.put(task);
+        
+        request.onsuccess = () => {
+            console.log("Trusswork Data Engine: Task successfully routed to temporary session trash tray in IndexedDB.");
+        };
+        
+        request.onerror = (error) => {
+            console.error("Failed to update database record status:", error);
+        };
+    } catch (error) {
+        console.error("Database transaction failed:", error);
+    }
+
+}
+
             }
             
             console.log("Task successfully routed to temporary session trash tray:", window.archivedTasks);
