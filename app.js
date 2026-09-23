@@ -611,18 +611,108 @@ function createTaskCard(task) {
             bText = 'DUE SOON'; 
         }
     } else { 
-        bText = 'COMPLETED'; 
-    }
+            // Define professional, sleek black-and-white vector graphics
+    const editIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>`;
+    const saveIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
 
+    // 1. Re-architect the Card Layout with the graphic button placeholder
     card.innerHTML = `
-        <div style="position: relative; display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-            <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task">&times;</button>
-            <div class="card-directive" style="padding-right: 1.5rem;">${task.directive}</div>
-            <div class="card-dept">${task.department}</div>
+        <div style="position: relative; display: flex; flex-direction: column; gap: 0.5rem; width: 100%; padding-right: 3.5rem;">
+            
+            <!-- Absolute Right-Aligned Action Box -->
+            <div style="position: absolute; right: 0.5rem; top: 0.5rem; display: flex; gap: 0.5rem; align-items: center;">
+                <button class="card-edit-trigger" data-id="${task.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-normal, #fff); opacity: 0.8; transition: opacity 0.2s;">${editIcon}</button>
+                <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 2px; font-size: 1.3rem; line-height: 1; color: var(--text-normal, #fff); opacity: 0.6; transition: opacity 0.2s;">&times;</button>
+            </div>
+
+            <!-- Main Task Body Fields -->
+            <div class="card-display-view">
+                <div class="card-directive" style="padding-right: 0.5rem; word-break: break-word;">${task.directive}</div>
+            </div>
+            <div class="card-edit-view" style="display: none; padding-right: 0.5rem;">
+                <textarea class="card-directive-input" style="width: 100%; resize: vertical; padding: 6px; font-family: inherit; font-size: inherit; background: rgba(255,255,255,0.08); color: inherit; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; outline: none;">${task.directive}</textarea>
+            </div>
+
+            <div class="card-dept">${task.department || 'General'}</div>
             <div class="card-badge ${bClass}">${bText}</div>
-            <div style="font-size:0.75rem; margin-top:4px; color:var(--text-muted);">${new Date(task.deadline).toLocaleString()}</div>
+            
+            <!-- Bottom Footer: Core Created & Deadline Tracking Stamps -->
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px;">
+                <div><span style="opacity: 0.6;">Created:</span> ${task.createdTimestamp ? new Date(task.createdTimestamp).toLocaleString() : new Date().toLocaleString()}</div>
+                <div><span style="opacity: 0.6;">Deadline:</span> ${new Date(task.deadline).toLocaleString()}</div>
+            </div>
         </div>
     `;
+
+    // 2. Query elements for listener bindings
+    const editBtn = card.querySelector('.card-edit-trigger');
+    const displayView = card.querySelector('.card-display-view');
+    const editView = card.querySelector('.card-edit-view');
+    const directiveInput = card.querySelector('.card-directive-input');
+
+    // 3. Hover effects for the professional layout
+    if (editBtn) {
+        editBtn.addEventListener('mouseenter', () => editBtn.style.opacity = '1');
+        editBtn.addEventListener('mouseleave', () => editBtn.style.opacity = '0.8');
+    }
+
+    // 4. Dual-Action Edit/Save Listener Integration
+    if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+
+            const isEditing = editView.style.display === 'block';
+
+            if (!isEditing) {
+                // SWITCH TO EDIT MODE
+                displayView.style.display = 'none';
+                editView.style.display = 'block';
+                editBtn.innerHTML = saveIcon; // Dynamically swap vector graphic to disk
+                editBtn.title = 'Save Changes';
+                directiveInput.focus();
+                
+                // Move text cursor to the end of the text input area
+                const length = directiveInput.value.length;
+                directiveInput.setSelectionRange(length, length);
+            } else {
+                // ATTEMPT CONTEXT SAVE MODE
+                const updatedText = directiveInput.value.trim();
+                
+                if (updatedText === '') {
+                    alert('Task directive cannot be blank!');
+                    return;
+                }
+
+                task.directive = updatedText;
+
+                // Persist updates to storage index indices permanently
+                if (typeof db !== 'undefined' && db) {
+                    try {
+                        const transaction = db.transaction(["tasks"], "readwrite");
+                        const store = transaction.objectStore("tasks");
+                        const request = store.put(task);
+
+                        request.onsuccess = () => {
+                            console.log(`Trusswork Engine: Successfully updated directive text for ID [${task.id}]`);
+                            
+                            // Revert UI fields cleanly to read-only view
+                            card.querySelector('.card-directive').textContent = updatedText;
+                            displayView.style.display = 'block';
+                            editView.style.display = 'none';
+                            editBtn.innerHTML = editIcon; // Revert graphic back to pen line vector
+                            editBtn.title = 'Edit Task';
+                        };
+
+                        request.onerror = (err) => {
+                            console.error("Database save failed:", err);
+                        };
+                    } catch (error) {
+                        console.error("Transaction exception error handling:", error);
+                    }
+                }
+            }
+        });
+    }
 
         const deleteBtn = card.querySelector('.card-delete-trigger');
         if (deleteBtn) {
@@ -872,4 +962,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
+}
