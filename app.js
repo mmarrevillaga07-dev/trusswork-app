@@ -131,16 +131,20 @@ document.getElementById('viewGridBtn').onclick = () => {
 };
 const trashBinElement = document.getElementById('trashBin');
 
-trashBinElement.addEventListener('click', () => {
-    if (archivedTasks.length === 0) {
-        alert("Your archive is currently empty!");
-        return;
-    }
-    
-    // For now, let's log the archived tasks or open a modal interface
-    console.log("Opening Archive History:", archivedTasks);
-    // You can trigger a modal layout window here to display the list
-});
+// Only try to attach the listener if the element is found on the screen
+if (trashBinElement) {
+    trashBinElement.addEventListener('click', () => {
+        if (archivedTasks.length === 0) {
+            alert("Your archive is currently empty!");
+            return;
+        }
+        
+        // For now, let's log the archived tasks or open a modal interface
+        console.log("Opening Archive History:", archivedTasks);
+        // You can trigger a modal layout window here to display the list
+    });
+}
+
 
 // ==========================================================================
 // 🔒 SECTION 4 (PART 1): 3-TIER LICENSES, DYNAMIC PASSCODES & LIVE CONTROLS
