@@ -499,3 +499,105 @@ button, select {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
 }
+/* Modal full-screen background overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed backdrop */
+    backdrop-filter: blur(4px); /* Modern frosted-glass effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* Stays above your floating trash bin */
+}
+
+/* Modal Content Card Window */
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: modalSlideUp 0.3s ease;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close-x {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto; /* Adds a scrollbar if you archive a lot of tasks */
+}
+
+/* List Layout of Archived Items */
+.archive-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.archive-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left: 4px solid var(--badge-overdue, #dc3545);
+}
+
+.archive-item-info strong {
+    display: block;
+    color: #212529;
+}
+
+.archive-item-info small {
+    color: #6c757d;
+}
+
+/* Clean Restore Action Button styling */
+.restore-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s ease;
+}
+
+.restore-btn:hover {
+    background-color: #218838;
+}
+
+/* Smooth pop-up scaling animation */
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
