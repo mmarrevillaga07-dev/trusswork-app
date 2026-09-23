@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const archiveList = document.getElementById('archiveList');
 
     // 1. CLICK TO OPEN THE GARBAGE BIN
-    if (trashBinElement) {
+    if (typeof trashBinElement !== 'undefined' && trashBinElement) {
         trashBinElement.addEventListener('click', () => {
             // Instantly compile the text array layout template items
             if (archiveList) {
@@ -777,38 +777,41 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="restore-btn" data-index="${index}" style="margin-left: 10px; background-color:#28a745; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Restore</button>
                         `;
                         
-        // Handle the single item restoration trigger action logic
-        li.querySelector('.restore-btn').addEventListener('click', (e) => {
-            const itemIndex = parseInt(e.target.getAttribute('data-index'));
-            const taskToRestore = window.archivedTasks[itemIndex];
-            
-            // Delete row item index from memory array stack trace
-            window.archivedTasks.splice(itemIndex, 1);
-            
-            // Call your app's existing rendering system to pop it back on screen
-            if (typeof createTaskCard === 'function') {
-                const restoredCard = createTaskCard(taskToRestore);
-                
-                // 💡 SMART COLUMN PICKER: Scans for common column container bodies in your app
-                const targetColumn = document.querySelector('.column-body') || 
-                                     document.querySelector('.kanban-column') || 
-                                     document.getElementById('pendingColumn') ||
-                                     document.querySelector('.task-column');
-                
-                if (targetColumn) {
-                    targetColumn.appendChild(restoredCard);
-                    console.log("Card successfully attached back to your viewport layout.");
-                } else {
-                    // Fallback: Pin it to your first main workspace layout section if column names mismatch
-                    const mainBoard = document.querySelector('main') || document.body;
-                    mainBoard.appendChild(restoredCard);
+                        // Handle the single item restoration trigger action logic
+                        li.querySelector('.restore-btn').addEventListener('click', (e) => {
+                            const itemIndex = parseInt(e.target.getAttribute('data-index'));
+                            const taskToRestore = window.archivedTasks[itemIndex];
+                            
+                            // Delete row item index from memory array stack trace
+                            window.archivedTasks.splice(itemIndex, 1);
+                            
+                            // Call your app's existing rendering system to pop it back on screen
+                            if (typeof createTaskCard === 'function') {
+                                const restoredCard = createTaskCard(taskToRestore);
+                                
+                                // SMART COLUMN PICKER: Scans for common column container bodies in your app
+                                const targetColumn = document.querySelector('.column-body') || 
+                                                     document.querySelector('.kanban-column') || 
+                                                     document.getElementById('pendingColumn') ||
+                                                     document.querySelector('.task-column');
+                                
+                                if (targetColumn) {
+                                    targetColumn.appendChild(restoredCard);
+                                    console.log("Card successfully attached back to your viewport layout.");
+                                } else {
+                                    // Fallback: Pin it to your first main workspace layout section if column names mismatch
+                                    const mainBoard = document.querySelector('main') || document.body;
+                                    mainBoard.appendChild(restoredCard);
+                                }
+                            }
+                            
+                            // RE-RENDER THE TRAY INSTANTLY (Instead of breaking out and closing it)
+                            trashBinElement.click(); 
+                        });
+                        
+                        archiveList.appendChild(li);
+                    });
                 }
-            }
-            
-            // RE-RENDER THE TRAY INSTANTLY (Instead of breaking out and closing it)
-            trashBinElement.click(); 
-        });
-
             }
             
             // Pop the window visible onto the screen viewport layout
@@ -819,7 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. CLICK THE MINI X BUTTON TO CLOSE THE TRASH POPUP
-    if (closeArchiveModalBtn) {
+    if (typeof closeArchiveModalBtn !== 'undefined' && closeArchiveModalBtn) {
         closeArchiveModalBtn.addEventListener('click', () => {
             if (archiveModal) archiveModal.style.display = 'none';
         });
