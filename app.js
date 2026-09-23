@@ -729,78 +729,83 @@ function generateCSVDownloadStream(tasks) {
     
     console.log(`Trusswork Data Engine: Successfully exported ${tasks.length} corporate records directly into download stream logs.`);
 }
-// 1. Show Modal View when clicking the Trash Bin icon
-if (typeof trashBinElement !== 'undefined' && trashBinElement) {
-    trashBinElement.addEventListener('click', () => {
-        renderArchiveList();
-        if (archiveModal) {
-            archiveModal.style.display = 'flex';
+// Ensure everything fires together once the DOM finishes compiling
+document.addEventListener('DOMContentLoaded', () => {
+    const trashBinElement = document.getElementById('trashBin');
+    const archiveModal = document.getElementById('archiveModal');
+    const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
+    const archiveList = document.getElementById('archiveList');
+
+    // 1. CLICK TO OPEN THE GARBAGE BIN
+    if (trashBinElement) {
+        trashBinElement.addEventListener('click', () => {
+            // Instantly compile the text array layout template items
+            if (archiveList) {
+                archiveList.innerHTML = ''; // Clear prior loop artifacts
+                
+                // If no entries live in our memory state array yet
+                if (!window.archivedTasks || window.archivedTasks.length === 0) {
+                    archiveList.innerHTML = '<li style="text-align:center; color:#6c757d; padding:20px; list-style:none;">Your archive is currently empty!</li>';
+                } else {
+                    // Loop through and render out whatever tasks were deleted this session
+                    window.archivedTasks.forEach((task, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'archive-item';
+                        
+                        const taskHeading = task.title || task.name || task.text || task.taskName || `Task #${task.id || index + 1}`;
+                        const taskSubheading = task.department || task.category || 'General Log';
+                        
+                        li.innerHTML = `
+                            <div class="archive-item-info">
+                                <strong>${taskHeading}</strong>
+                                <small style="text-transform: capitalize; color:#6c757d;">${taskSubheading}</small>
+                            </div>
+                            <button class="restore-btn" data-index="${index}" style="margin-left: 10px; background-color:#28a745; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Restore</button>
+                        `;
+                        
+                        // Handle the single item restoration trigger action logic
+                        li.querySelector('.restore-btn').addEventListener('click', (e) => {
+                            const itemIndex = parseInt(e.target.getAttribute('data-index'));
+                            const taskToRestore = window.archivedTasks[itemIndex];
+                            
+                            // Delete row item index from memory array stack trace
+                            window.archivedTasks.splice(itemIndex, 1);
+                            
+                            // Call your app's existing rendering system to pop it back on screen
+                            if (typeof createTaskCard === 'function') {
+                                const restoredCard = createTaskCard(taskToRestore);
+                                const targetColumn = document.querySelector('.task-column') || document.getElementById('pendingColumn');
+                                if (targetColumn) targetColumn.appendChild(restoredCard);
+                            }
+                            
+                            // Instantly hide the modal box overlay layout view window
+                            if (archiveModal) archiveModal.style.display = 'none';
+                        });
+                        
+                        archiveList.appendChild(li);
+                    });
+                }
+            }
+            
+            // Pop the window visible onto the screen viewport layout
+            if (archiveModal) {
+                archiveModal.style.display = 'flex';
+            }
+        });
+    }
+
+    // 2. CLICK THE MINI X BUTTON TO CLOSE THE TRASH POPUP
+    if (closeArchiveModalBtn) {
+        closeArchiveModalBtn.addEventListener('click', () => {
+            if (archiveModal) archiveModal.style.display = 'none';
+        });
+    }
+
+    // 3. CLICK OUTSIDE THE CARD TO VANISH THE POPUP OVERLAY WINDOW
+    window.addEventListener('click', (event) => {
+        if (archiveModal && event.target === archiveModal) {
+            archiveModal.style.display = 'none';
         }
     });
-}
-
-// 2. Hide Modal View when clicking the 'x' button
-if (typeof closeArchiveModalBtn !== 'undefined' && closeArchiveModalBtn) {
-    closeArchiveModalBtn.addEventListener('click', () => {
-        archiveModal.style.display = 'none';
-    });
-}
-
-// 3. Hide Modal View if user clicks outside the modal card box boundaries
-window.addEventListener('click', (event) => {
-    if (typeof archiveModal !== 'undefined' && archiveModal && event.target === archiveModal) {
-        archiveModal.style.display = 'none';
-    }
 });
 
-// 4. Render Array Items inside the Archive List Window
-function renderArchiveList() {
-    archiveList.innerHTML = ''; // Clear prior loop outputs
-    
-    if (archivedTasks.length === 0) {
-        archiveList.innerHTML = '<li style="text-align:center; color:#6c757d; padding:20px;">No archived tasks found.</li>';
-        return;
-    }
-    
-    archivedTasks.forEach((task, index) => {
-        const li = document.createElement('li');
-        li.className = 'archive-item';
-        
-        li.innerHTML = `
-            <div class="archive-item-info">
-                <strong>${task.title || 'Untitled Task'}</strong>
-                <small>${task.department || 'General'}</small>
-            </div>
-            <button class="restore-btn" data-index="${index}">Restore</button>
-        `;
-        
-        // Wire up individual restore tracking trigger
-        li.querySelector('.restore-btn').addEventListener('click', (e) => {
-            const itemIndex = parseInt(e.target.getAttribute('data-index'));
-            restoreTask(itemIndex);
-        });
-        
-        archiveList.appendChild(li);
-    });
-}
-
-// 5. Restore task functionality
-function restoreTask(index) {
-    const taskToRestore = archivedTasks[index];
-    
-    // Remove from archive list array
-    archivedTasks.splice(index, 1);
-    
-    // Connect to your existing card rendering workflow
-    const restoredCard = createTaskCard(taskToRestore);
-    
-    // Appends the restored card back to its original or default column lane
-    // (Adjust 'pendingColumn' if you track column containers differently!)
-    const targetColumn = document.querySelector('.task-column') || document.getElementById('pendingColumn');
-    if (targetColumn) {
-        targetColumn.appendChild(restoredCard);
-    }
-    
-    // Refresh modal viewing display context layouts
-    renderArchiveList();
-}
