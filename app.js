@@ -20,7 +20,7 @@ const i18n = {
 
 let currentLang = 'en';
 let db;
-let archivedTasks = [];
+window.archivedTasks = [];
 
 // 2. Persistent Offline Storage Structure (IndexedDB)
 const request = indexedDB.open("TrussworkDB", 1);
