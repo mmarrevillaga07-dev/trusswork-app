@@ -808,6 +808,76 @@ document.querySelectorAll('.board-column').forEach(col => {
 // Auto-evaluate timelines every 30 seconds 
 setInterval(loadTasks, 30000);
 updateNetworkStatus();
+
+// 10. Form Submission & Task Commitment Handler
+document.addEventListener('DOMContentLoaded', () => {
+    // Target your blue commit button or the container form
+    const commitButton = document.getElementById('Commit Task') || document.querySelector('.btn-commit') || document.querySelector('button[style*="background: rgb(0, 122, 255)"]') || document.querySelector('button[style*="blue"]');
+    const taskForm = document.querySelector('form') || document.getElementById('taskForm');
+
+    // Fallback: If no form exists, bind directly to the blue button click
+    const targetElement = taskForm || commitButton;
+
+    if (targetElement) {
+        targetElement.addEventListener(taskForm ? 'submit' : 'click', (e) => {
+            e.preventDefault();
+
+            // Safe target input element fields
+            const directiveSelect = document.querySelector('select[style*="Corporate Directive"]') || document.querySelector('select');
+            const deptSelect = document.querySelectorAll('select')[1] || document.querySelector('select[style*="Department Track"]');
+            const deadlineInput = document.querySelector('input[type="datetime-local"]') || document.querySelector('input[type="date"]');
+
+            if (!directiveSelect || !directiveSelect.value) {
+                alert("Please select a Corporate Directive before committing.");
+                return;
+            }
+
+            // Build a perfectly aligned task object mapping exactly to your new template
+            const newTask = {
+                id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                directive: directiveSelect.value,
+                department: deptSelect ? deptSelect.value : 'Operations',
+                status: 'pending',
+                createdTimestamp: Date.now(), // 💎 Tracks your creation clock perfectly
+                deadline: deadlineInput && deadlineInput.value ? deadlineInput.value : new Date(Date.now() + 86400000).toISOString()
+            };
+
+            // Write securely to your IndexedDB instance engine
+            if (typeof db !== 'undefined' && db) {
+                try {
+                    const transaction = db.transaction(["tasks"], "readwrite");
+                    const store = transaction.objectStore("tasks");
+                    const request = store.add(newTask);
+
+                    request.onsuccess = () => {
+                        console.log("Trusswork Data Engine: Successfully committed fresh directive state to persistent storage.");
+                        
+                        // Clear text input fields if applicable, or leave selectors intact
+                        if (taskForm) taskForm.reset();
+
+                        // Force an immediate UI redraw layout update
+                        if (typeof loadTasks === 'function') {
+                            loadTasks();
+                        }
+                    };
+
+                    request.onerror = (error) => {
+                        console.error("Database save failed inside form submission transaction:", error);
+                    };
+                } catch (err) {
+                    console.error("Failed to build readwrite transaction context execution script:", err);
+                }
+            } else {
+                console.error("Critical State Error: IndexedDB instance 'db' is uninitialized or missing.");
+                alert("Database engine is not fully ready. Please refresh and try again.");
+            }
+        });
+        console.log("Trusswork Engine: Missing form submission listener safely bound to task portal inputs.");
+    } else {
+        console.error("Trusswork Engine: Unable to locate the Commit Task form element anchors on the DOM.");
+    }
+});
+
 // ==========================================================================
 // 📊 ENTERPRISE INTEGRATION: DATA STREAM EXPORT ROUTINE (EXCEL/CSV PIPELINE)
 // ==========================================================================
