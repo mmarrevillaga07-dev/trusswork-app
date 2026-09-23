@@ -562,18 +562,27 @@ function loadTasks() {
 
     db.transaction("tasks", "readonly").objectStore("tasks").openCursor().onsuccess = (e) => {
         const cursor = e.target.result;
-        if (cursor) {
-            const task = cursor.value;
-            m.total++; m[task.status]++;
-            
-            if (task.status !== 'completed' && new Date(task.deadline).getTime() < Date.now()) {
-                m.overdue++;
-            }
+            if (cursor) {
+        const task = cursor.value;
 
-            const card = createTaskCard(task);
-            lists[task.status].appendChild(card);
+        // CRITICAL FIX: Skip rendering if the task is archived or marked for trash
+        if (task.status === 'archived' || task.isDeleted) {
             cursor.continue();
-        } else {
+            return;
+        }
+
+        m.total++;
+        m[task.status]++;
+
+        if (task.status !== 'completed' && new Date(task.deadline).getTime() < Date.now()) {
+            m.overdue++;
+        }
+
+        const card = createTaskCard(task);
+        lists[task.status].appendChild(card);
+        cursor.continue();
+    }
+
             // Update Metrics Board Panel Elements
             document.getElementById('metricTotal').textContent = m.total;
             document.getElementById('metricPending').textContent = m.pending;
@@ -582,7 +591,7 @@ function loadTasks() {
             document.getElementById('metricOverdue').textContent = m.overdue;
         }
     };
-}
+
 
 // 9. Task Card Generation with Action Triggers & Time-Delta Badging Rules
 function createTaskCard(task) {
@@ -615,21 +624,35 @@ function createTaskCard(task) {
         </div>
     `;
 
-    const deleteBtn = card.querySelector('.card-delete-trigger');
-    if (deleteBtn) {
+        const deleteBtn = card.querySelector('.card-delete-trigger');
+        if (deleteBtn) {
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             
-            // Initialize global array memory container if it got dropped
             if (!window.archivedTasks) {
                 window.archivedTasks = [];
             }
             
-            // 1. Push the entire task object parameters safely into memory space
+            // 1. Push the task parameters into the active session memory tray
             window.archivedTasks.push(task);
             
             // 2. Visually slide the task card layout element off your columns array
             card.remove();
+            
+            // 3. UPDATE INDEXEDDB SO IT PERMANENTLY REMEMBERS THE DELETION
+            if (typeof db !== 'undefined' && db) {
+                try {
+                    const transaction = db.transaction(["tasks"], "readwrite");
+                    const store = transaction.objectStore("tasks");
+                    
+                    // Mark status as archived so your load loop skips it on main lanes
+                    task.status = 'archived'; 
+                    store.put(task);
+                    console.log("Task status updated to 'archived' inside IndexedDB.");
+                } catch (error) {
+                    console.error("Failed to update database record status:", error);
+                }
+            }
             
             console.log("Task successfully routed to temporary session trash tray:", window.archivedTasks);
         });
