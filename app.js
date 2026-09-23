@@ -777,28 +777,38 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="restore-btn" data-index="${index}" style="margin-left: 10px; background-color:#28a745; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Restore</button>
                         `;
                         
-                        // Handle the single item restoration trigger action logic
-                        li.querySelector('.restore-btn').addEventListener('click', (e) => {
-                            const itemIndex = parseInt(e.target.getAttribute('data-index'));
-                            const taskToRestore = window.archivedTasks[itemIndex];
-                            
-                            // Delete row item index from memory array stack trace
-                            window.archivedTasks.splice(itemIndex, 1);
-                            
-                            // Call your app's existing rendering system to pop it back on screen
-                            if (typeof createTaskCard === 'function') {
-                                const restoredCard = createTaskCard(taskToRestore);
-                                const targetColumn = document.querySelector('.task-column') || document.getElementById('pendingColumn');
-                                if (targetColumn) targetColumn.appendChild(restoredCard);
-                            }
-                            
-                            // Instantly hide the modal box overlay layout view window
-                            if (archiveModal) archiveModal.style.display = 'none';
-                        });
-                        
-                        archiveList.appendChild(li);
-                    });
+        // Handle the single item restoration trigger action logic
+        li.querySelector('.restore-btn').addEventListener('click', (e) => {
+            const itemIndex = parseInt(e.target.getAttribute('data-index'));
+            const taskToRestore = window.archivedTasks[itemIndex];
+            
+            // Delete row item index from memory array stack trace
+            window.archivedTasks.splice(itemIndex, 1);
+            
+            // Call your app's existing rendering system to pop it back on screen
+            if (typeof createTaskCard === 'function') {
+                const restoredCard = createTaskCard(taskToRestore);
+                
+                // 💡 SMART COLUMN PICKER: Scans for common column container bodies in your app
+                const targetColumn = document.querySelector('.column-body') || 
+                                     document.querySelector('.kanban-column') || 
+                                     document.getElementById('pendingColumn') ||
+                                     document.querySelector('.task-column');
+                
+                if (targetColumn) {
+                    targetColumn.appendChild(restoredCard);
+                    console.log("Card successfully attached back to your viewport layout.");
+                } else {
+                    // Fallback: Pin it to your first main workspace layout section if column names mismatch
+                    const mainBoard = document.querySelector('main') || document.body;
+                    mainBoard.appendChild(restoredCard);
                 }
+            }
+            
+            // RE-RENDER THE TRAY INSTANTLY (Instead of breaking out and closing it)
+            trashBinElement.click(); 
+        });
+
             }
             
             // Pop the window visible onto the screen viewport layout
