@@ -616,10 +616,24 @@ function createTaskCard(task) {
     `;
 
     const deleteBtn = card.querySelector('.card-delete-trigger');
-    deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        executeTaskDeletion(parseInt(e.target.dataset.id));
-    });
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Initialize global array memory container if it got dropped
+            if (!window.archivedTasks) {
+                window.archivedTasks = [];
+            }
+            
+            // 1. Push the entire task object parameters safely into memory space
+            window.archivedTasks.push(task);
+            
+            // 2. Visually slide the task card layout element off your columns array
+            card.remove();
+            
+            console.log("Task successfully routed to temporary session trash tray:", window.archivedTasks);
+        });
+    }
 
     card.addEventListener('dragstart', () => card.classList.add('dragging'));
     card.addEventListener('dragend', () => card.classList.remove('dragging'));
