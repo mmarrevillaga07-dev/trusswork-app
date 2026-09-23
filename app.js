@@ -730,19 +730,25 @@ function generateCSVDownloadStream(tasks) {
     console.log(`Trusswork Data Engine: Successfully exported ${tasks.length} corporate records directly into download stream logs.`);
 }
 // 1. Show Modal View when clicking the Trash Bin icon
-trashBinBtn.addEventListener('click', () => {
-    renderArchiveList();
-    archiveModal.style.display = 'flex';
-});
+if (typeof trashBinElement !== 'undefined' && trashBinElement) {
+    trashBinElement.addEventListener('click', () => {
+        renderArchiveList();
+        if (archiveModal) {
+            archiveModal.style.display = 'flex';
+        }
+    });
+}
 
 // 2. Hide Modal View when clicking the 'x' button
-closeArchiveModalBtn.addEventListener('click', () => {
-    archiveModal.style.display = 'none';
-});
+if (typeof closeArchiveModalBtn !== 'undefined' && closeArchiveModalBtn) {
+    closeArchiveModalBtn.addEventListener('click', () => {
+        archiveModal.style.display = 'none';
+    });
+}
 
 // 3. Hide Modal View if user clicks outside the modal card box boundaries
 window.addEventListener('click', (event) => {
-    if (event.target === archiveModal) {
+    if (typeof archiveModal !== 'undefined' && archiveModal && event.target === archiveModal) {
         archiveModal.style.display = 'none';
     }
 });
