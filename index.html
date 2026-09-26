@@ -3,165 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trusswork™ - Enterprise Task Management</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles.css">
+    <title>Trusswork™ Operational Terminal Workspace</title>
+    <style>
+        :root {
+            --bg-primary: #12141c;
+            --bg-surface: #1a1d29;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --badge-safe: #28a745;
+            --badge-soon: #ffc107;
+            --badge-overdue: #dc3545;
+        }
+
+        body.dark-mode {
+            --bg-primary: #090a0f;
+            --bg-surface: #11131a;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease;
+        }
+        /* Lock screen structural shield wrapper styles */
+        body.app-locked #mainAppLayoutContainer {
+            display: none !important;
+        }
+        #gatekeeperWindow {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0f111a;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        .board-container.kanban-view {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        .board-container.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .board-column {
+            background: var(--bg-surface);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            min-height: 500px;
+        }
+        .task-card {
+            margin-bottom: 12px;
+            cursor: grab;
+        }
+        .task-card.dragging {
+            opacity: 0.4;
+        }
+        .metric-badge {
+            font-weight: bold;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="light-mode app-locked">
-
-    <!-- 🔒 THE GATEKEEPER SECURE WINDOW OVERLAY -->
-    <div id="gatekeeperWindow" class="gatekeeper-overlay">
-        <div class="gatekeeper-card">
-            <div class="gatekeeper-header">
-                <h2>Trusswork™</h2>
-                <p>by LogicMinds Tech</p>
-            </div>
-            <div class="gatekeeper-body">
-                <label for="gatekeeperPasscode">ENTER ENTERPRISE GATEKEEPER PASSCODE</label>
-                <input type="password" id="gatekeeperPasscode" placeholder="••••••••" autocomplete="current-password">
-                <div id="loginError" class="login-error-msg">Access Denied: Invalid Passcode</div>
-                <button id="gatekeeperSubmitBtn">Authorize Terminal Access</button>
-            </div>
+<body class="app-locked">
+    <!-- =================================================================== -->
+    <!-- 🔒 SECURITY ARCHITECTURE GATEKEEPER LAYER                          -->
+    <!-- =================================================================== -->
+    <div id="gatekeeperWindow" style="display: flex; opacity: 1;">
+        <div style="background: #161925; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px; width: 100%; border: 1px solid var(--border-color);">
+            <h2 data-i18n="signin">Sign In</h2>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Trusswork™ Security Verification Needed</p>
+            <input type="password" id="gatekeeperPasscode" placeholder="Enter License Token..." style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: #000; color: #fff; box-sizing: border-box; outline: none; font-size: 16px;">
+            <div id="loginError" style="display: none; color: var(--badge-overdue); font-size: 13px; margin-bottom: 15px;">Invalid access token credentials.</div>
+            <button id="gatekeeperSubmitBtn" style="width: 100%; padding: 12px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;">Verify Passcode</button>
         </div>
     </div>
 
-    <!-- MAIN APP APP LAYOUT (Locked until authorized) -->
-    <header class="app-header">
-        <div class="brand-container">
-            <span class="brand-logo" data-i18n="brand">Trusswork™</span>
-            <span class="brand-sub">by LogicMinds Tech</span>
-        </div>
-        <div class="controls-container"> 
-    <button id="viewKanbanBtn" class="toggle-btn active" data-i18n="kanban">Kanban</button> 
-    <button id="viewGridBtn" class="toggle-btn" data-i18n="grid">Grid</button> 
-    
-    <select id="langSelect" class="styled-select"> 
-        <option value="en">English</option> 
-        <option value="zh">Mandarin</option> 
-        <option value="hi">Hindi</option> 
-        <option value="es">Spanish</option> 
-        <option value="fr">French</option> 
-        <option value="ar">Arabic</option> 
-        <option value="bn">Bengali</option> 
-        <option value="pt">Portuguese</option> 
-        <option value="ru">Russian</option> 
-        <option value="ur">Urdu</option> 
-    </select> 
-    
-    <button id="themeToggleBtn" class="action-btn" data-i18n="mode">Mode</button> 
-    <button id="lockTerminalBtn" class="action-btn" style="background-color: var(--badge-overdue); color: white; border: none;" data-i18n="lockApp">Lock Terminal</button> 
-    <button id="exportBtn" class="action-btn" data-i18n="export">Export</button> 
-</div>
-  </header>
-
-    <main class="main-layout">
-        <section class="task-form-panel">
-            <div class="input-group">
-                <label data-i18n="directive">CORPORATE DIRECTIVE</label>
-                <select id="directiveInput">
-                    <option value="System Operational Sync">System Operational Sync</option>
-                    <option value="Database Cluster Maintenance">Database Cluster Maintenance</option>
-                    <option value="Security Architecture Audit">Security Architecture Audit</option>
+    <!-- =================================================================== -->
+    <!-- 💼 MAIN TERMINAL RUNTIME CONTENT VIEWPORT                          -->
+    <!-- =================================================================== -->
+    <div id="mainAppLayoutContainer">
+        
+        <!-- Workspace Corporate Header Track -->
+        <header style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
+            <div class="brand-container" style="display: flex; align-items: center;">
+                <h1 data-i18n="brand" style="margin: 0; font-size: 20px; letter-spacing: 0.05em;">Trusswork™</h1>
+            </div>
+            
+            <!-- Structural Control Center Shell Triggers -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <select id="langSelect" style="background: #000; color: #fff; padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <option value="en" selected>English (EN)</option>
+                    <option value="zh">中文 (ZH)</option>
+                    <option value="hi">हिन्दी (HI)</option>
+                    <option value="es">Español (ES)</option>
+                    <option value="fr">Français (FR)</option>
+                    <option value="ar">العربية (AR)</option>
+                    <option value="bn">বাংলা (BN)</option>
+                    <option value="pt">Português (PT)</option>
+                    <option value="ru">Русский (RU)</option>
+                    <option value="ur">اردو (UR)</option>
                 </select>
+                
+                <button id="themeToggleBtn" data-i18n="mode" style="background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer;">Mode</button>
+                <button id="viewKanbanBtn" data-i18n="kanban" class="active" style="background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer;">Kanban</button>
+                <button id="viewGridBtn" data-i18n="grid" style="background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer;">Grid</button>
+                <button id="exportBtn" data-i18n="export" style="background: #198754; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; display: none;">Export</button>
+                <button id="openAdminDrawerBtn" style="background: #6c757d; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Admin Panel</button>
+                <button id="lockTerminalBtn" data-i18n="lockApp" style="background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; display: none;">Lock Terminal</button>
             </div>
-            <div class="input-group">
-                <label data-i18n="department">DEPARTMENT TRACK</label>
-                <select id="departmentInput">
-                    <option value="Engineering">Engineering</option>
-                    <option value="Operations">Operations</option>
-                    <option value="Security">Security</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label data-i18n="deadline">TARGET DEADLINE</label>
-                <input type="datetime-local" id="deadlineInput">
-            </div>
-            <button id="commitTaskBtn" data-i18n="commitTask">Commit Task</button>
+        </header>
+        <!-- Dynamic Live Telemetry Counters -->
+        <section style="display: flex; gap: 20px; padding: 20px 30px; background: rgba(0,0,0,0.2);">
+            <div><span data-i18n="mTotal">Total Tasks</span>: <span id="metricTotal" class="metric-badge">0</span></div>
+            <div><span data-i18n="mPending">Pending</span>: <span id="metricPending" class="metric-badge">0</span></div>
+            <div><span data-i18n="mActive">Active</span>: <span id="metricActive" class="metric-badge">0</span></div>
+            <div><span data-i18n="mCompleted">Completed</span>: <span id="metricCompleted" class="metric-badge">0</span></div>
+            <div><span data-i18n="mOverdue">Overdue</span>: <span id="metricOverdue" class="metric-badge" style="background: rgba(220,53,69,0.2); color: #ff4d4d;">0</span></div>
+            <div style="margin-left: auto;"><span data-i18n="mNetwork">Network Status</span>: <span id="metricNetwork" class="metric-badge" style="background: #0d6efd;">Online</span></div>
         </section>
 
-        <section id="boardContainer" class="board-container kanban-view">
-            <div class="board-column" data-status="pending">
-                <h3 data-i18n="pendingExecution">PENDING EXECUTION</h3>
-                <div class="card-list" id="pendingList"></div>
-            </div>
-            <div class="board-column" data-status="active">
-                <h3 data-i18n="activeProcessing">ACTIVE PROCESSING</h3>
-                <div class="card-list" id="activeList"></div>
-            </div>
-            <div class="board-column" data-status="completed">
-                <h3 data-i18n="completedLogs">COMPLETED LOGS</h3>
-                <div class="card-list" id="completedList"></div>
+        <!-- Fresh Task Appendment Commitment Form Block -->
+        <section style="padding: 20px 30px; max-width: 800px;">
+            <div style="background: var(--bg-surface); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; gap: 15px; align-items: flex-end;">
+                <div style="flex: 2;">
+                    <label data-i18n="directive" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; opacity: 0.8;">CORPORATE DIRECTIVE</label>
+                    <select id="directiveInput" style="width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <option value="" disabled selected>Choose a workspace directive...</option>
+                        <option value="System Operational Sync">System Operational Sync</option>
+                        <option value="Security Architecture Audit">Security Architecture Audit</option>
+                        <option value="Database Cluster Maintenance">Database Cluster Maintenance</option>
+                        <option value="Cloud Migration Strategy Deployment">Cloud Migration Deployment</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label data-i18n="department" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; opacity: 0.8;">DEPARTMENT TRACK</label>
+                    <select id="departmentInput" style="width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <option value="Operations">Operations</option>
+                        <option value="Security">Security</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label data-i18n="deadline" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; opacity: 0.8;">TARGET DEADLINE</label>
+                    <input type="datetime-local" id="deadlineInput" style="width: 100%; padding: 8px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <button id="commitTaskBtn" data-i18n="commitTask" style="padding: 10px 20px; background: #0d6efd; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; height: 38px;">Commit Task</button>
             </div>
         </section>
-    </main>
-
-    <footer class="metrics-footer">
-        <div class="metrics-grid">
-            <div class="metric-card"><span data-i18n="mTotal">Total Tasks</span>: <strong id="metricTotal">0</strong></div>
-            <div class="metric-card"><span data-i18n="mPending">Pending</span>: <strong id="metricPending">0</strong></div>
-            <div class="metric-card"><span data-i18n="mActive">Active</span>: <strong id="metricActive">0</strong></div>
-            <div class="metric-card"><span data-i18n="mCompleted">Completed</span>: <strong id="metricCompleted">0</strong></div>
-            <div class="metric-card"><span data-i18n="mOverdue">Overdue</span>: <strong id="metricOverdue" class="overdue-count">0</strong></div>
-            <div class="metric-card"><span data-i18n="mNetwork">Network Status</span>: <strong id="metricNetwork">Online</strong></div>
-        </div>
-    <!-- ⚙️ INTERACTIVE ADMINISTRATIVE SETTINGS PANEL (ASP) -->
-    <div id="adminPanelDrawer" class="admin-drawer" style="display: none;">
-        <div class="admin-drawer-content">
-            <div class="admin-drawer-header">
-                <h4 data-i18n="adminConsole">SYSTEM ADMINISTRATIVE CONSOLE</h4>
-                <button id="closeAdminDrawerBtn" class="admin-close-btn">&times;</button>
+        <!-- Interactive Agile Column Track Lanes -->
+        <main id="boardContainer" class="board-container kanban-view">
+            
+            <div class="board-column" data-status="pending" id="pendingColumn">
+                <h3 data-i18n="pendingExecution" style="margin-top: 0; padding-bottom: 10px; border-bottom: 2px solid #6c757d; font-size: 14px; opacity: 0.9; letter-spacing: 0.05em;">PENDING EXECUTION</h3>
+                <div id="pendingList" class="column-body" style="min-height: 450px;"></div>
             </div>
-            <div class="admin-drawer-body">
-                <div class="admin-input-group">
-                    <label>OVERRIDE LICENSE PASSCODE (CURRENT TIER)</label>
-                    <input type="text" id="adminPasscodeOverride" placeholder="Enter new passcode string">
-                </div>
-                <div class="admin-input-group">
-                    <label>SECURITY INACTIVITY TIMEOUT (MINUTES)</label>
-                    <input type="number" id="adminTimeoutOverride" min="1" max="120" value="15">
-                </div>
-                <button id="saveAdminConfigBtn">Commit Configuration Update</button>
+
+            <div class="board-column" data-status="active" id="activeColumn">
+                <h3 data-i18n="activeProcessing" style="margin-top: 0; padding-bottom: 10px; border-bottom: 2px solid #0d6efd; font-size: 14px; opacity: 0.9; letter-spacing: 0.05em;">ACTIVE PROCESSING</h3>
+                <div id="activeList" class="kanban-column" style="min-height: 450px;"></div>
+            </div>
+
+            <div class="board-column" data-status="completed" id="completedColumn">
+                <h3 data-i18n="completedLogs" style="margin-top: 0; padding-bottom: 10px; border-bottom: 2px solid #28a745; font-size: 14px; opacity: 0.9; letter-spacing: 0.05em;">COMPLETED LOGS</h3>
+                <div id="completedList" class="task-column" style="min-height: 450px;"></div>
+            </div>
+
+        </main>
+        <!-- =================================================================== -->
+        <!-- 🗑️ ACTIONABLE SYSTEM TRASH BIN TARGET TRIGGER POINTER               -->
+        <!-- =================================================================== -->
+        <div id="trashBin" style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; user-select: none;">
+            <span style="font-size: 24px; color: white;">🗑️</span>
+        </div>
+
+    </div> <!-- Close #mainAppLayoutContainer -->
+
+    <!-- =================================================================== -->
+    <!-- 🎛️ ADMINISTRATIVE PARAMETERS DRAWER OVERLAY                        -->
+    <!-- =================================================================== -->
+    <div id="adminPanelDrawer" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 5000;">
+        <div style="background: var(--bg-surface); padding: 30px; border-radius: 8px; max-width: 450px; width: 100%; border: 1px solid var(--border-color); box-sizing: border-box;">
+            <h3 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Workspace Administration Suite</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 13px; margin-bottom: 5px; opacity: 0.8;">Active License Tier Passcode Override</label>
+                <input type="text" id="adminPasscodeOverride" style="width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-size: 13px; margin-bottom: 5px; opacity: 0.8;">Inactivity Session Logout Limit (Minutes)</label>
+                <input type="number" id="adminTimeoutOverride" min="1" max="120" style="width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="closeAdminDrawerBtn" style="padding: 10px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button id="saveAdminConfigBtn" style="padding: 10px 16px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Save System Configuration</button>
             </div>
         </div>
     </div>
 
-    <footer class="metrics-footer">
-        <div class="metrics-grid">
-            <div class="metric-card"><span data-i18n="mTotal">Total Tasks</span>: <strong id="metricTotal">0</strong></div>
-            <div class="metric-card"><span data-i18n="mPending">Pending</span>: <strong id="metricPending">0</strong></div>
-            <div class="metric-card"><span data-i18n="mActive">Active</span>: <strong id="metricActive">0</strong></div>
-            <div class="metric-card"><span data-i18n="mCompleted">Completed</span>: <strong id="metricCompleted">0</strong></div>
-            <div class="metric-card"><span data-i18n="mOverdue">Overdue</span>: <strong id="metricOverdue" class="overdue-count">0</strong></div>
-            <!-- 💡 WE ADDED AN ADMIN ACCESS BUTTON LINK RIGHT HERE IN THE NETWORK METRIC CELL -->
-            <div class="metric-card">
-                <span data-i18n="mNetwork">Network Status</span>: <strong id="metricNetwork">Online</strong> 
-                <button id="openAdminDrawerBtn" class="admin-trigger-link" style="margin-left: 10px; font-size: 0.7rem; padding: 1px 5px; color: var(--text-muted);">[SYS_ADMIN]</button>
+    <!-- =================================================================== -->
+    <!-- 🗄️ SESSION ARCHIVE VIEW RECYCLER WINDOW PANEL                       -->
+    <!-- =================================================================== -->
+    <div id="archiveModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 5000;">
+        <div style="background: var(--bg-surface); padding: 30px; border-radius: 8px; max-width: 500px; width: 100%; border: 1px solid var(--border-color); box-sizing: border-box;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Session Temporary Trash Archiving Records</h3>
+                <button id="closeArchiveModal" style="background: none; border: none; color: #ff4d4d; font-size: 20px; cursor: pointer; font-weight: bold; padding: 0;">✕</button>
             </div>
-        </div>
-
-    </footer>
-
-    <script src="app.js"></script>
-
-    <!-- Floating Trash Bin Target -->
-    <div id="trashBin" class="floating-trash-bin">
-        <span class="trash-icon">&#128465;</span>
-    </div>
-
-    <!-- Archive History Modal Overlay -->
-<div id="archiveModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>🗄️ Archived Task History</h3>
-            <button id="closeArchiveModal" class="modal-close-x">&times;</button>
-        </div>
-        <div class="modal-body">
-            <ul id="archiveList" class="archive-list">
-                <!-- Archived task items will be injected here dynamically by JavaScript -->
+            
+            <!-- Target element for task card row injections -->
+            <ul id="archiveList" style="list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto;">
+                <!-- Content handled dynamically by Part 11/12 logic streams -->
             </ul>
         </div>
     </div>
-</div>
 
+    <!-- =================================================================== -->
+    <!-- 🛠️ APPLICATION ENTRYPOINT LINK                                    -->
+    <!-- =================================================================== -->
+    <script src="app.js"></script>
 </body>
 </html>

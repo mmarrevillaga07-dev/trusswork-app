@@ -1,59 +1,44 @@
-# Trusswork™ 🚀
-### Enterprise-Grade High-Scale Task Management PWA
-**Engineered by:** LogicMinds Tech  
-**Target Architecture:** Cross-Platform Desktop, Laptop, Tablet, & Smartphone Mobile Frameworks
+# Trusswork™ Operational Terminal Workspace
+
+A secure, offline-first Progressive Web Application (PWA) designed for enterprise directive tracking and agile workflow processing. Built with native performance web standards, secure tier access control models, and a self-healing client storage engine.
 
 ---
 
-## 🔒 The Gatekeeper Subsystem
-Trusswork™ is built with zero-trust security topologies. Upon accessing the application terminal canvas, the workspace interface is restricted behind a modal authorization wall.
-* **Standard Gatekeeper Passcode:** `LogicMinds2026`
-* **Automated Security Protocol:** Feature loops monitor user interactions. Terminal state triggers an automatic lock if cursor inactivity matches or exceeds a **15-minute window**.
+## 🏗️ Core Architecture Overview
 
----
+This software platform runs fully client-side using a decoupled, reactive architecture. By leveraging multi-threaded service interception workers and hardware persistent buffers, it remains 100% resilient during structural network dropouts.
 
-## 🛠️ Core Capabilities & Structural Layout
-* **Bi-Modal Orientation Alignment:** Uses specialized fluid CSS Grid rules to ensure workflow boxes stay completely **centered** and never overflow view boundaries when transitioning between landscape and portrait.
-* **Dual Palette Engine:** Supports instant switching between high-visibility **Light Mode** and an enterprise **Dark Mode**.
-* **Zero-Latency Persistence Layer:** Built with a custom asynchronous browser database loop (**IndexedDB**) that enables seamless operations without an internet connection.
-* **10-Language Multi-Lingual Lookup Dictionary:** Real-time localized interface translations supporting **English, Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Portuguese, Russian, and Urdu**.
-* **HTML5 Pointer Drag-and-Drop Interactions:** Fluid task card handling loops that automatically update internal data states instantly upon card drop.
-* **Live Urgency delta Badging System:** Continuously calculates task deadlines against the system clock to assign `SAFE` (Green), `DUE SOON` (Amber - less than 24 hours), or `OVERDUE` (Red) contextual states.
-* **Data Stream Backup Export Pipeline:** Downloads your updated task records directly into an Excel-compatible `.csv` tracking document with a single click.
-
----
-
-## 📁 Project Architecture Mapping
-Ensure all operational assets reside within the same directory framework for clean deployment linking:
+### 📁 System Directory Blueprints
 ```text
-trusswork-app/
-├── index.html        # Unified workspace structures, language registries, & view columns
-├── styles.css        # Responsive layouts, layout boundaries, & dark/light theme tokens
-├── app.js            # Translation indices, Inactivity loops, IndexedDB, & CSV export engines
-├── sw.js             # Service Worker orchestration handling offline data asset caching
-├── manifest.json     # Configuration file enabling native cross-platform OS installation
-│
-├── corporate-legal/  # 📁 Enterprise Compliance Documentation Logs
-│   ├── Trusswork_Ownership_Declaration.pdf   # Genesis proof of IP asset ownership
-│   └── Trusswork_Terms_of_Service.pdf        # Offline data caching liability disclaimers
-│
-└── sales-playbooks/  # 📁 B2B Growth Strategy & Billing Assets
-    ├── Trusswork_B2B_Pitch_Sequence.pdf      # Automated 3-part executive email series
-    ├── Trusswork_Pitch_Deck_Outline.pdf      # Slide-by-slide sales presentation framework
-    ├── Trusswork_Commercial_Invoice_Template.pdf # Refined seat volume itemized bill sheet
-    └── Trusswork_FAQs.pdf                    # NEW: Master objection handling & FAQ guide
-
+Trusswork_Files/
+├── index.html        # UI framework structural layouts & modal layers
+├── app.js            # Core orchestration pipeline, IndexedDB logic & auth engines
+├── sw.js             # Service worker fetch interception & cache proxies
+├── styles.css        # Adaptive view sizing rules & light/dark mode properties
+└── manifest.json     # PWA deployment identity metadata parameters
 ```
 
-## 🚀 How to Run and Install
-Because Progressive Web Apps require secure hosting validation (`HTTPS` or `http://localhost`), do not execute by double-clicking the raw files.
+---
 
-### Local Development Test Run
-1. Open your terminal app inside the project directory folder.
-2. Fire up a simple web host environment instantly:
-   * **Python:** `python -m http.server 8000`
-   * **Node.js / npm:** `npx serve`
-3. Navigate your browser to `http://localhost:8000` (or `http://localhost:3000`).
+## 🛠️ Technological Component Stacks
 
-### Native Machine Installation
-When accessing the project via a secure host or your live **GitHub Pages** deployment link, look inside your browser's address field bar. Click the **Download/Install App** badge shortcut icon (the down-arrow or `+` symbol) to natively deploy **Trusswork™** directly onto your home machine or smartphone home screen!
+1. **Database Layer (IndexedDB):** Avoids unstable local storage wrappers by creating a persistent storage system index cache engine natively inside the hardware space.
+2. **Network Proxy (Service Worker):** Listens for all system pipeline queries, falling back to clean local cached assets during active network disconnects.
+3. **Identity Access Control Engine:** Enforces restriction logic based on client license scopes (Core, Scale, or Enterprise).
+
+---
+
+## 🚀 Local Installation & Quickstart Run Controls
+
+### Prerequisites
+To avoid Cross-Origin Resource Sharing (CORS) security context exceptions when accessing client database modules, the system must be executed inside a local web server space rather than running from bare disk file schemas (`file://`).
+
+### Implementation Steps
+1. **Clone or Download Project Workspace Files:** Place `index.html`, `app.js`, `sw.js`, `styles.css`, and `manifest.json` completely together inside your local root project folder location.
+2. **Launch Live Preview Server:**
+   * **VS Code:** Click **Go Live** on the bottom right task control status bar to spin up your browser container layout instantly via Live Server.
+   * **Python:** Execute `python -m http.server 8000` via your command line inside the directory path layout space.
+3. **Authentication Verification:** Log inside the workspace gatekeeper shield prompt window using one of the system fallback core structural activation codes:
+   * **Core license mode:** `TrussworkCore2026`
+   * **Scale license mode:** `TrussworkScale2026`
+   * **Enterprise hub mode:** `TrussworkEnterprise2026`

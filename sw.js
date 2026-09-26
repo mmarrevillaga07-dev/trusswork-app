@@ -1,51 +1,75 @@
-const CACHE_NAME = 'trusswork-cache-v2'; // 💡 TIP: Increment this v2 -> v3 next time you update!
-const ASSETS = [
-    './',
-    './index.html',
-    './styles.css',
-    './app.js',
-    './manifest.json'
+// =========================================================================
+// 🚀 SERVICE WORKER RUNTIME INFRASTRUCTURE (sw.js)
+// =========================================================================
+const CACHE_NAME = "Trusswork-Terminal-v1";
+
+// 1. Explicitly list all assets required for localized offline operations
+const OFFLINE_ASSET_REGISTRY = [
+    "./",
+    "./index.html",
+    "./app.js"
 ];
 
-// 1. Install Event: Opens the cache and stores all static layout assets
-self.addEventListener('install', (e) => {
-    e.waitUntil(
+// 2. INSTALL LIFECYCLE EVENT: Pre-caches critical web platform assets
+self.addEventListener("install", (event) => {
+    console.log("Trusswork Worker Engine: Deploying persistent storage cache registries...");
+    event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Trusswork SW: Caching core assets for offline usage.');
-            return cache.addAll(ASSETS);
+            return cache.addAll(OFFLINE_ASSET_REGISTRY);
+        }).then(() => {
+            // Force the installing worker to become active instantly
+            return self.skipWaiting();
         })
     );
-    // 🚀 FORCE NEW CODES IMMEDATELY WITHOUT WAITING FOR USER TO CLOSE TABS
-    self.skipWaiting(); 
 });
 
-// 2. Activate Event: Clears out old cache assets and claims active tabs instantly
-self.addEventListener('activate', (e) => {
-    e.waitUntil(
-        caches.keys().then((keys) => {
+// 3. ACTIVATE LIFECYCLE EVENT: Sweeps and drops obsolete system caches
+self.addEventListener("activate", (event) => {
+    console.log("Trusswork Worker Engine: Cache sweep protocol initializing...");
+    event.waitUntil(
+        caches.keys().then((cacheKeys) => {
             return Promise.all(
-                keys.map((key) => {
+                cacheKeys.map((key) => {
                     if (key !== CACHE_NAME) {
-                        console.log('Trusswork SW: Clearing obsolete cache store:', key);
+                        console.log(`Trusswork Worker Engine: Purging legacy cache [${key}]`);
                         return caches.delete(key);
                     }
                 })
             );
         }).then(() => {
-            // 🚀 Force the new service worker to take control of the open webpage right away
+            // Direct the worker to take immediate control over open viewport tabs
             return self.clients.claim();
         })
     );
 });
+// 4. FETCH INTERCEPT PIPELINE: Handles all browser request loops
+self.addEventListener("fetch", (event) => {
+    // Leave database system calls to pass directly to IndexedDB uninterrupted
+    if (event.request.url.includes("indexeddb")) return;
 
-// 3. Fetch Event: Intercepts browser network calls to provide instant offline loading
-self.addEventListener('fetch', (e) => {
-    e.respondWith(
-        caches.match(e.request).then((cachedResponse) => {
-            return cachedResponse || fetch(e.request).catch(() => {
-                if (e.request.mode === 'navigate') {
-                    return caches.match('./index.html');
+    event.respondWith(
+        caches.match(event.request).then((cachedResponse) => {
+            // Return from offline memory state if hit, otherwise fetch fresh
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            return fetch(event.request).then((networkResponse) => {
+                // Ensure received network values are valid before tracking them
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
+                    return networkResponse;
                 }
+
+                // Clone response streams safely before writing them to the cache
+                const structuralResponseClone = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, structuralResponseClone);
+                });
+
+                return networkResponse;
+            }).catch((networkError) => {
+                console.error("Trusswork Worker Engine: Operational request sync break: ", networkError);
+                // Custom error routing fallbacks can be handled here if files mismatch
             });
         })
     );

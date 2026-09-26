@@ -1,18 +1,25 @@
-// DOM Element Targets
-const archiveModal = document.getElementById('archiveModal');
-const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
-const trashBinBtn = document.getElementById('trashBin');
-const archiveList = document.getElementById('archiveList');
+// =========================================================================
+// 🌐 GLOBAL STATE REGISTRY & CORE CONFIGURATION
+// =========================================================================
+const PASSCODE_KEY = "TrussworkAuthorizedToken";
+const LICENSED_TIER_KEY = "TrussworkLicensedTier";
+const CUSTOM_PASSCODES_PREFIX = "TrussworkCustomPass_";
+const CUSTOM_TIMEOUT_KEY = "TrussworkCustomTimeoutMinutes";
 
-// 1. Multi-lingual Lookups (10 Most Common Languages)
+const DEFAULT_TIERS = {
+    "TrussworkCore2026": "CORE",
+    "TrussworkScale2026": "SCALE",
+    "TrussworkEnterprise2026": "ENTERPRISE"
+};
+
 const i18n = {
     en: { brand: "Trusswork™", kanban: "Kanban", grid: "Grid", mode: "Mode", export: "Export", signin: "Sign In", directive: "CORPORATE DIRECTIVE", department: "DEPARTMENT TRACK", deadline: "TARGET DEADLINE", commitTask: "Commit Task", pendingExecution: "PENDING EXECUTION", activeProcessing: "ACTIVE PROCESSING", completedLogs: "COMPLETED LOGS", mTotal: "Total Tasks", mPending: "Pending", mActive: "Active", mCompleted: "Completed", mOverdue: "Overdue", mNetwork: "Network Status",lockApp: "Lock Terminal" },
     zh: { brand: "Trusswork™", kanban: "看板", grid: "网格", mode: "模式", export: "导出", signin: "登录", directive: "公司指令", department: "部门追踪", deadline: "目标截止日期", commitTask: "提交任务", pendingExecution: "待执行", activeProcessing: "进行中", completedLogs: "已完成日志", mTotal: "总任务", mPending: "待处理", mActive: "进行中", mCompleted: "已完成", mOverdue: "逾期", mNetwork: "网络状态", lockApp: "锁定终端" },
-    hi: { brand: "Trusswork™", kanban: "कानबान", grid: "ग्रिड", mode: "मोڈ", export: "निर्यात", signin: "साइन इन", directive: "कॉर्पोरेट निर्देश", department: "विभाग ट्रैक", deadline: "अंतिम समय सीमा", commitTask: "कार्य सौंपें", pendingExecution: "لंबित निष्पादन", activeProcessing: "सक्रिय प्रसंस्करण", completedLogs: "पूर्ण लॉग", mTotal: "कुल कार्य", mPending: "لंबित", mActive: "सक्रिय", mCompleted: "पूर्ण", mOverdue: "विलंबित", mNetwork: "नेटवर्क स्थिति", lockApp: "टर्मिनल लॉक करें" },
+    hi: { brand: "Trusswork™", kanban: "कानबान", grid: "ग्रिड", mode: "मोड", export: "निर्यात", signin: "साइन इन", directive: "कॉर्पोरेट निर्देश", department: "विभाग ट्रैक", deadline: "अंतिम समय सीमा", commitTask: "कार्य सौंपें", pendingExecution: "لंबित निष्पादन", activeProcessing: "सक्रिय प्रसंस्करण", completedLogs: "पूर्ण लॉग", mTotal: "कुल कार्य", mPending: "لंबित", mActive: "सक्रिय", mCompleted: "पूर्ण", mOverdue: "विलंबित", mNetwork: "नेटवर्क स्थिति", lockApp: "टर्मिनल लॉक करें" },
     es: { brand: "Trusswork™", kanban: "Kanban", grid: "Cuadrícula", mode: "Modo", export: "Exportar", signin: "Ingresar", directive: "DIRECTIVA CORPORATIVA", department: "SEGUIMIENTO", deadline: "FECHA LÍMITE", commitTask: "Asignar Tarea", pendingExecution: "EJECUCIÓN PENDIENTE", activeProcessing: "PROCESAMIENTO ACTIVO", completedLogs: "REGISTROS COMPLETADOS", mTotal: "Tareas Totales", mPending: "Pendientes", mActive: "Activas", mCompleted: "Completadas", mOverdue: "Vencidas", mNetwork: "Estado de Red", lockApp: "Bloquear Terminal" },
     fr: { brand: "Trusswork™", kanban: "Kanban", grid: "Grille", mode: "Mode", export: "Exporter", signin: "Se connecter", directive: "DIRECTIVE D'ENTREPRISE", department: "SUIVI", deadline: "DATE LIMITE", commitTask: "Valider", pendingExecution: "EXÉCUTION EN ATTENTE", activeProcessing: "TRAITEMENT ACTIF", completedLogs: "JOURNAUX TERMINÉS", mTotal: "Total", mPending: "En attente", mActive: "Actives", mCompleted: "Terminées", mOverdue: "En retard", mNetwork: "État du réseau", lockApp: "Verrouiller le terminal" },
     ar: { brand: "Trusswork™", kanban: "كانبان", grid: "شبكة", mode: "وضع", export: "تصدير", signin: "تسجيل الدخول", directive: "التوجيه المؤسسي", department: "مسار القسم", deadline: "الموعد النهائي", commitTask: "تنفيذ المهمة", pendingExecution: "في انتظار التنفيذ", activeProcessing: "المعالجة النشطة", completedLogs: "السجلات المكتملة", mTotal: "إجمالي المهام", mPending: "معلق", mActive: "نشط", mCompleted: "مكتمل", mOverdue: "متأخر", mNetwork: "حالة الشبكة", lockApp: "قفل النهاية" },
-    bn: { brand: "Trusswork™", kanban: "কানবান", grid: "গ্রিড", mode: "মোড", export: "রপ্তানি", signin: "সাইন ইন", directive: "কর্পোরেট নির্দেশিকা", department: "বিভাগ ট্র্যাক", deadline: "টার্গেট ডেডলাইন", commitTask: "টাস্ক সাবমিট", pendingExecution: "অপেক্ষমান সম্পাদন", activeProcessing: "সक्रिय প্রক্রিয়াকরণ", completedLogs: "সম্পন্ন লগ", mTotal: "মোট টাস্ক", mPending: "অপেক্ষমান", mActive: "সক্রিয়", mCompleted: "সম্পন্ন", mOverdue: "অতীত ডেডলাইন", mNetwork: "নেটওয়ার্ক স্ট্যাটاس", lockApp: "টার্মিনাল লক করুন" },
+    bn: { brand: "Trusswork™", kanban: "কানবান", grid: "গ্রিড", mode: "মোড", export: "রপ্তানি", signin: "সাইন ইন", directive: "কর্পোরেট নির্দেশিকা", department: "বিভাগ ট্র্যাক", deadline: "টার্গেট ডেডলাইন", commitTask: "টাস্ক সাবমিট", pendingExecution: "অপেক্ষমান সম্পাদন", activeProcessing: "সক্রিয় প্রক্রিয়াকরণ", completedLogs: "সম্পন্ন লগ", mTotal: "মোট টাস্ক", mPending: "অপেক্ষমান", mActive: "সক্রিয়", mCompleted: "সম্পন্ন", mOverdue: "অতীত ডেডলাইন", mNetwork: "নেটওয়ার্ক স্ট্যাটাস", lockApp: "টার্মিনাল লক করুন" },
     pt: { brand: "Trusswork™", kanban: "Kanban", grid: "Grade", mode: "Modo", export: "Exportar", signin: "Entrar", directive: "DIRETRIZ CORPORATIVA", department: "ACOMPANHAMENTO", deadline: "PRAZO LIMITE", commitTask: "Confirmar", pendingExecution: "EXECUÇÃO PENDENTE", activeProcessing: "PROCESSAMENTO ATIVO", completedLogs: "REGISTROS CONCLUÍDOS", mTotal: "Total", mPending: "Pendentes", mActive: "Ativas", mCompleted: "Concluídas", mOverdue: "Atrasadas", mNetwork: "Status da Rede", lockApp: "Bloquear Terminal" },
     ru: { brand: "Trusswork™", kanban: "Канбан", grid: "Сетка", mode: "Режим", export: "Экспорт", signin: "Войти", directive: "КОРПОРАТИВНАЯ ДИРЕКТИВА", department: "ОТДЕЛ", deadline: "СРОК ВЫПОЛНЕНИЯ", commitTask: "Создать задачу", pendingExecution: "ОЖИДАЕТ ВЫПОЛНЕНИЯ", activeProcessing: "В РАБОТЕ", completedLogs: "ЗАВЕРШЕННЫЕ", mTotal: "Всего задач", mPending: "В ожидании", mActive: "В работе", mCompleted: "Завершено", mOverdue: "Просрочено", mNetwork: "Статус сети", lockApp: "Заблокировать терминал" },
     ur: { brand: "Trusswork™", kanban: "کانبان", grid: "گرڈ", mode: "موڈ", export: "ایکسپورٹ", signin: "سائن ان", directive: "کارپوریٹ ہدایت", department: "شعبہ ٹریک", deadline: "آخری تاریخ", commitTask: "ٹاسک جمع کریں", pendingExecution: "التواء عملدرآمد", activeProcessing: "فعال پروسیسنگ", completedLogs: "مکمل لاگز", mTotal: "کل ٹاسکس", mPending: "التواء", mActive: "فعال", mCompleted: "مکمل", mOverdue: "تاخیر شدہ", mNetwork: "نیٹ ورک کی صورتحال", lockApp: "ٹرمینل کو لاک کریں" }
@@ -20,26 +27,28 @@ const i18n = {
 
 let currentLang = 'en';
 let db;
+let inactivityTimeout;
 window.archivedTasks = [];
 
-// 2. Persistent Offline Storage Structure (IndexedDB)
+const editIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+const saveIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
+// =========================================================================
+// 📦 PERSISTENT STORAGE ENGINE (INDEXEDDB)
+// =========================================================================
 const request = indexedDB.open("TrussworkDB", 1);
 request.onupgradeneeded = (e) => {
     db = e.target.result;
     if (!db.objectStoreNames.contains("tasks")) {
-        db.createObjectStore("tasks", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("tasks", { keyPath: "id" }); 
     }
 };
 request.onsuccess = (e) => { 
     db = e.target.result; 
-    
-    // Check if store is empty, if yes, bootstrap database with realistic records
     const checkTransaction = db.transaction("tasks", "readonly");
     const countRequest = checkTransaction.objectStore("tasks").count();
     
     countRequest.onsuccess = () => {
         if (countRequest.result === 0) {
-            console.log("Trusswork Data Engine: Empty cache registry recognized. Seeding starter corporate directives...");
             bootstrapMockTasks();
         } else {
             loadTasks();
@@ -49,162 +58,47 @@ request.onsuccess = (e) => {
 
 function bootstrapMockTasks() {
     const mockData = [
-        { directive: "System Operational Sync", department: "Operations", status: "pending", deadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 16) },
-        { directive: "Security Architecture Audit", department: "Security", status: "active", deadline: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString().slice(0, 16) },
-        { directive: "Database Cluster Maintenance", department: "Engineering", status: "completed", deadline: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16) }
+        { id: Date.now(), directive: "System Operational Sync", department: "Operations", status: "pending", createdTimestamp: Date.now(), deadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().slice(0, 16) },
+        { id: Date.now() + 1, directive: "Security Architecture Audit", department: "Security", status: "active", createdTimestamp: Date.now(), deadline: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString().slice(0, 16) },
+        { id: Date.now() + 2, directive: "Database Cluster Maintenance", department: "Engineering", status: "completed", createdTimestamp: Date.now(), deadline: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16) }
     ];
 
     const transaction = db.transaction(["tasks"], "readwrite");
     const store = transaction.objectStore("tasks");
-    
     mockData.forEach(task => store.add(task));
-    transaction.oncomplete = () => {
-        console.log("Trusswork Data Engine: Mock data seeded successfully.");
-        loadTasks();
-    };
+    transaction.oncomplete = () => { loadTasks(); };
 }
 
-
-// 3. Register Service Worker Environment with Auto-Reload Controller
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').then((reg) => {
-            // Look out for any new updates while the app is open
             reg.onupdatefound = () => {
                 const installingWorker = reg.installing;
                 if (installingWorker == null) return;
-                
                 installingWorker.onstatechange = () => {
-                    if (installingWorker.state === 'installed') {
-                        if (navigator.serviceWorker.controller) {
-                            console.log('New updates detected! The app will now reload seamlessly.');
-                        }
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        console.log('New updates detected! Refreshing logic framework.');
                     }
                 };
             };
         }).catch(err => console.log('SW Registration Failed', err));
     });
 
-    // 🚀 AUTOMATIC WEB REFRESH TRIGGER
-    // Fires when the new service worker calls self.skipWaiting() and self.clients.claim()
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-        }
+        if (!refreshing) { refreshing = true; window.location.reload(); }
     });
 }
-function setupTaskEventListeners(taskCard, taskData) {
-    const archiveBtn = taskCard.querySelector('.close-btn, .delete-btn'); 
-    
-    if (archiveBtn) {
-        archiveBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            archivedTasks.push(taskData);
-            taskCard.remove();
-            console.log("Task moved to archive:", archivedTasks);
-        });
-    }
-}
-
-// 4. Global Action Event Listeners
-document.getElementById('langSelect').addEventListener('change', (e) => {
-    currentLang = e.target.value;
-    applyLanguage();
-});
-
-document.getElementById('themeToggleBtn').onclick = () => { 
-    document.body.classList.toggle('dark-mode'); 
-};
-
-const boardContainer = document.getElementById('boardContainer');
-document.getElementById('viewKanbanBtn').onclick = () => {
-    boardContainer.className = "board-container kanban-view";
-    document.getElementById('viewKanbanBtn').classList.add('active');
-    document.getElementById('viewGridBtn').classList.remove('active');
-};
-document.getElementById('viewGridBtn').onclick = () => {
-    boardContainer.className = "board-container grid-view";
-    document.getElementById('viewGridBtn').classList.add('active');
-    document.getElementById('viewKanbanBtn').classList.remove('active');
-};
-const trashBinElement = document.getElementById('trashBin');
-
-// Only try to attach the listener if the element is found on the screen
-if (trashBinElement) {
-    trashBinElement.addEventListener('click', () => {
-        if (archivedTasks.length === 0) {
-            alert("Your archive is currently empty!");
-            return;
-        }
-        
-        // For now, let's log the archived tasks or open a modal interface
-        console.log("Opening Archive History:", archivedTasks);
-        // You can trigger a modal layout window here to display the list
-    });
-}
-
-
-// ==========================================================================
-// 🔒 SECTION 4 (PART 1): 3-TIER LICENSES, DYNAMIC PASSCODES & LIVE CONTROLS
-// ==========================================================================
-const PASSCODE_KEY = "TrussworkAuthorizedToken";
-const LICENSED_TIER_KEY = "TrussworkLicensedTier";
-const CUSTOM_PASSCODES_PREFIX = "TrussworkCustomPass_";
-const CUSTOM_TIMEOUT_KEY = "TrussworkCustomTimeoutMinutes";
-
-// Default fallback codes registry
-const DEFAULT_TIERS = {
-    "TrussworkCore2026": "CORE",
-    "TrussworkScale2026": "SCALE",
-    "TrussworkEnterprise2026": "ENTERPRISE"
-};
-
-let inactivityTimeout;
-
+// =========================================================================
+// 🔒 LOCK ENGINE, SECURE AUTHENTICATION & LICENSE TIERS
+// =========================================================================
 function checkInitialLockState() {
     if (localStorage.getItem(PASSCODE_KEY) === "true") {
-        const activeTier = localStorage.getItem(LICENSED_TIER_KEY);
-        unlockTerminal(activeTier);
+        unlockTerminal(localStorage.getItem(LICENSED_TIER_KEY));
     }
 }
 
-// Ensure DOM elements exist before binding listeners to prevent script breaks
-document.addEventListener("DOMContentLoaded", () => {
-    // FIX: If we've already initialized the buttons once, stop immediately to prevent doubling
-    if (window.appInitialized) return;
-    window.appInitialized = true;
-    const duplicateCheck = document.querySelectorAll('.your-button-class');
-    if (duplicateCheck.length > 4) {
-        // If there are more buttons present than expected, refresh the container node
-        window.location.reload(); 
-    }
-});
-
-    const submitBtn = document.getElementById('gatekeeperSubmitBtn');
-    const inputField = document.getElementById('gatekeeperPasscode');
-
-    if (submitBtn) {
-        submitBtn.removeAttribute('onclick'); // Wipe any broken inline attributes from HTML
-        submitBtn.onclick = validatePasscode;
-    }
-
-    if (inputField) {
-        inputField.removeAttribute('onkeydown'); // Wipe any broken inline attributes from HTML
-        inputField.onkeydown = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault(); // Stop native page reload behaviors on enter
-                validatePasscode();
-            }
-        };
-    }
-    
-    // Check state immediately on document load
-    checkInitialLockState();
-
 function getActiveTierFromPasscode(passcode) {
-    // 🔗 Check if the admin customized this specific passcode inside the local storage engine
     for (const [defaultPass, tier] of Object.entries(DEFAULT_TIERS)) {
         const storedOverride = localStorage.getItem(CUSTOM_PASSCODES_PREFIX + tier);
         if (storedOverride && storedOverride === passcode) return tier;
@@ -216,7 +110,6 @@ function getActiveTierFromPasscode(passcode) {
 function validatePasscode() {
     const inputField = document.getElementById('gatekeeperPasscode');
     const errorMsg = document.getElementById('loginError');
-    
     if (!inputField) return;
     
     const enteredPass = inputField.value.trim();
@@ -232,9 +125,7 @@ function validatePasscode() {
         inputField.value = "";
         inputField.focus();
         inputField.style.borderColor = "var(--badge-overdue)";
-        setTimeout(() => {
-            inputField.style.borderColor = "var(--border-color)";
-        }, 1000);
+        setTimeout(() => { inputField.style.borderColor = "var(--border-color)"; }, 1000);
     }
 }
 
@@ -245,17 +136,9 @@ function unlockTerminal(tier) {
         overlay.style.opacity = "0";
         setTimeout(() => { overlay.style.display = "none"; }, 300);
     }
-    
     enforceTierLayoutRestrictions(tier);
-
-    // 💡 Add the inactivity timers here so they still track properly
-    if (typeof resetInactivityTimer === "function") resetInactivityTimer();
-    if (typeof setupInactivityListeners === "function") setupInactivityListeners();
 }
 
-// ==========================================================================
-// 🔒 SECTION 4 (PART 2): TIMEOUT CALCULATIONS & LIVE ADMIN CONFIGURATION DRAWER
-// ==========================================================================
 function enforceTierLayoutRestrictions(tier) {
     const exportBtn = document.getElementById('exportBtn');
     const lockBtn = document.getElementById('lockTerminalBtn');
@@ -265,30 +148,27 @@ function enforceTierLayoutRestrictions(tier) {
         if (lockBtn) lockBtn.style.display = "none";
         removeInactivityListeners();
         clearTimeout(inactivityTimeout);
-    } else if (tier === "SCALE") {
+    } else {
         if (exportBtn) exportBtn.style.display = "block";
         if (lockBtn) lockBtn.style.display = "block";
         resetInactivityTimer();
         setupInactivityListeners();
-        removeSSOBanner();
-    } else if (tier === "ENTERPRISE") {
-        if (exportBtn) exportBtn.style.display = "block";
-        if (lockBtn) lockBtn.style.display = "block";
-        resetInactivityTimer();
-        setupInactivityListeners();
-        injectSSOBadge();
+        if (tier === "ENTERPRISE") injectSSOBadge(); else removeSSOBanner();
     }
 }
 
-document.getElementById('lockTerminalBtn').onclick = lockTerminal;
 function lockTerminal() {
     localStorage.removeItem(PASSCODE_KEY);
     localStorage.removeItem(LICENSED_TIER_KEY);
     document.body.classList.add('app-locked');
     const overlay = document.getElementById('gatekeeperWindow');
-    overlay.style.display = "flex";
-    setTimeout(() => { overlay.style.opacity = "1"; }, 10);
-    document.getElementById('gatekeeperPasscode').value = "";
+    if (overlay) {
+        overlay.style.display = "flex";
+        setTimeout(() => { overlay.style.opacity = "1"; }, 10);
+    }
+    const gkPass = document.getElementById('gatekeeperPasscode');
+    if (gkPass) gkPass.value = "";
+    
     removeInactivityListeners();
     clearTimeout(inactivityTimeout);
     removeSSOBanner();
@@ -299,256 +179,82 @@ function resetInactivityTimer() {
     if (activeTier === "CORE") return;
     
     clearTimeout(inactivityTimeout);
-    
-    // Read dynamic user defined minute thresholds (defaulting to 15 if empty)
     const customMinutes = parseInt(localStorage.getItem(CUSTOM_TIMEOUT_KEY)) || 15;
-    const msInterval = customMinutes * 60 * 1000;
-    
-    inactivityTimeout = setTimeout(() => { lockTerminal(); }, msInterval); 
+    inactivityTimeout = setTimeout(() => { lockTerminal(); }, customMinutes * 60 * 1000); 
 }
 
 function setupInactivityListeners() {
-    window.addEventListener('mousemove', resetInactivityTimer);
-    window.addEventListener('keydown', resetInactivityTimer);
-    window.addEventListener('click', resetInactivityTimer);
-    window.addEventListener('scroll', resetInactivityTimer);
-    window.addEventListener('touchstart', resetInactivityTimer);
-}
-
-function removeInactivityListeners() {
-    window.removeEventListener('mousemove', resetInactivityTimer);
-    window.removeEventListener('keydown', resetInactivityTimer);
-    window.removeEventListener('click', resetInactivityTimer);
-    window.removeEventListener('scroll', resetInactivityTimer);
-    window.removeEventListener('touchstart', resetInactivityTimer);
-}
-
-function injectSSOBadge() {
-    if (document.getElementById('enterpriseSSOBadge')) return;
-    const header = document.querySelector('.brand-container');
-    const badge = document.createElement('span');
-    badge.id = "enterpriseSSOBadge";
-    badge.textContent = "SSO SECURED";
-    badge.style.cssText = "font-size:0.65rem; background:#0d6efd; color:white; padding:2px 6px; border-radius:10px; font-weight:bold; margin-left:8px; letter-spacing:0.05em;";
-    header.appendChild(badge);
-}
-
-function removeSSOBanner() {
-    const badge = document.getElementById('enterpriseSSOBadge');
-    if (badge) badge.remove();
-}
-
-// 🎛️ COGNITIVE PANEL DRAWER CONTROL LIFECYCLE
-const adminDrawer = document.getElementById('adminPanelDrawer');
-document.getElementById('openAdminDrawerBtn').onclick = () => {
-    const activeTier = localStorage.getItem(LICENSED_TIER_KEY) || "CORE";
-    const currentPass = localStorage.getItem(CUSTOM_PASSCODES_PREFIX + activeTier) || 
-                       (activeTier === "CORE" ? "TrussworkCore2026" : 
-                        activeTier === "SCALE" ? "TrussworkScale2026" : "TrussworkEnterprise2026");
-    const currentTimeout = localStorage.getItem(CUSTOM_TIMEOUT_KEY) || "15";
-    
-    document.getElementById('adminPasscodeOverride').value = currentPass;
-    document.getElementById('adminTimeoutOverride').value = currentTimeout;
-    adminDrawer.style.display = "flex";
-};
-
-document.getElementById('closeAdminDrawerBtn').onclick = () => { adminDrawer.style.display = "none"; };
-
-document.getElementById('saveAdminConfigBtn').onclick = () => {
-    const activeTier = localStorage.getItem(LICENSED_TIER_KEY) || "CORE";
-    const newPass = document.getElementById('adminPasscodeOverride').value.trim();
-    const newTimeout = document.getElementById('adminTimeoutOverride').value;
-    
-    if(!newPass) { alert("Passcode validation string parameter cannot be left blank."); return; }
-    
-    localStorage.setItem(CUSTOM_PASSCODES_PREFIX + activeTier, newPass);
-    localStorage.setItem(CUSTOM_TIMEOUT_KEY, newTimeout);
-    
-    alert(`System Admin Patch Saved!\nTier [${activeTier}] Passcode updated to: ${newPass}\nInactivity lock set to: ${newTimeout} minutes.`);
-    adminDrawer.style.display = "none";
-    resetInactivityTimer();
-};
-
-function enforceTierLayoutRestrictions(tier) {
-    const exportBtn = document.getElementById('exportBtn');
-    const lockBtn = document.getElementById('lockTerminalBtn');
-    
-    console.log(`Trusswork Data Engine: Initializing security workspace under [${tier}] authorization credentials.`);
-
-    if (tier === "CORE") {
-        // 1. Core Track Rules: Hide Export, Hide Lock App Button, Kill background timers
-        if (exportBtn) exportBtn.style.display = "none";
-        if (lockBtn) lockBtn.style.display = "none";
-        removeInactivityListeners();
-        clearTimeout(inactivityTimeout);
-    } 
-    else if (tier === "SCALE") {
-        // 2. Scale Operational Rules: Show Export & Lock, Turn on 15-Min Inactivity Timer
-        if (exportBtn) exportBtn.style.display = "block";
-        if (lockBtn) lockBtn.style.display = "block";
-        resetInactivityTimer();
-        setupInactivityListeners();
-        
-        // Remove Enterprise SSO override indicator if it exists
-        removeSSOBanner();
-    } 
-    else if (tier === "ENTERPRISE") {
-        // 3. Enterprise Hub Rules: Open full suite + deploy SSO verification badge
-        if (exportBtn) exportBtn.style.display = "block";
-        if (lockBtn) lockBtn.style.display = "block";
-        resetInactivityTimer();
-        setupInactivityListeners();
-        
-        injectSSOBadge();
-    }
-}
-
-function lockTerminal() {
-    localStorage.removeItem(PASSCODE_KEY);
-    localStorage.removeItem(LICENSED_TIER_KEY);
-    document.body.classList.add('app-locked');
-    const overlay = document.getElementById('gatekeeperWindow');
-    overlay.style.display = "flex";
-    setTimeout(() => { overlay.style.opacity = "1"; }, 10);
-    document.getElementById('gatekeeperPasscode').value = "";
-    
     removeInactivityListeners();
-    clearTimeout(inactivityTimeout);
-    removeSSOBanner();
-}
-
-// ⏳ Background Inactivity Tracking Mechanics (15 Minutes)
-function resetInactivityTimer() {
-    const activeTier = localStorage.getItem(LICENSED_TIER_KEY);
-    if (activeTier === "CORE") return; // Safety bailout for free accounts
-    
-    clearTimeout(inactivityTimeout);
-    inactivityTimeout = setTimeout(() => {
-        console.log("Terminal inactive for 15 minutes. Executing automatic security logout.");
-        lockTerminal();
-    }, 900000); 
-}
-
-function setupInactivityListeners() {
-    window.addEventListener('mousemove', resetInactivityTimer);
-    window.addEventListener('keydown', resetInactivityTimer);
-    window.addEventListener('click', resetInactivityTimer);
-    window.addEventListener('scroll', resetInactivityTimer);
-    window.addEventListener('touchstart', resetInactivityTimer);
-}
-
-function removeInactivityListeners() {
-    window.removeEventListener('mousemove', resetInactivityTimer);
-    window.removeEventListener('keydown', resetInactivityTimer);
-    window.removeEventListener('click', resetInactivityTimer);
-    window.removeEventListener('scroll', resetInactivityTimer);
-    window.removeEventListener('touchstart', resetInactivityTimer);
-}
-
-// Enterprise UI helpers
-function injectSSOBadge() {
-    if (document.getElementById('enterpriseSSOBadge')) return;
-    const header = document.querySelector('.brand-container');
-    const badge = document.createElement('span');
-    badge.id = "enterpriseSSOBadge";
-    badge.textContent = "SSO SECURED";
-    badge.style.cssText = "font-size:0.65rem; background:#0d6efd; color:white; padding:2px 6px; border-radius:10px; font-weight:bold; margin-left:8px; letter-spacing:0.05em;";
-    header.appendChild(badge);
-}
-
-function removeSSOBanner() {
-    const badge = document.getElementById('enterpriseSSOBadge');
-    if (badge) badge.remove();
-}
-
-window.addEventListener('DOMContentLoaded', checkInitialLockState);
-
-// Manual Lock Event Binding
-document.getElementById('lockTerminalBtn').onclick = lockTerminal;
-document.getElementById('gatekeeperSubmitBtn').onclick = validatePasscode;
-document.getElementById('gatekeeperPasscode').onkeydown = (e) => {
-    if (e.key === 'Enter') validatePasscode();
-};
-
-function lockTerminal() {
-    localStorage.removeItem(PASSCODE_KEY);
-    document.body.classList.add('app-locked');
-    const overlay = document.getElementById('gatekeeperWindow');
-    overlay.style.display = "flex";
-    setTimeout(() => { overlay.style.opacity = "1"; }, 10);
-    document.getElementById('gatekeeperPasscode').value = "";
-    
-    // Kill activity background listeners when locked
-    removeInactivityListeners();
-    clearTimeout(inactivityTimeout);
-}
-
-// ⏳ Background Inactivity Tracking Mechanics (15 Minutes)
-function resetInactivityTimer() {
-    clearTimeout(inactivityTimeout);
-    // 15 minutes = 15 * 60 * 1000 milliseconds = 900,000ms
-    inactivityTimeout = setTimeout(() => {
-        console.log("Terminal inactive for 15 minutes. Executing automatic security logout.");
-        lockTerminal();
-    }, 900000); 
-}
-
-function setupInactivityListeners() {
-    window.addEventListener('mousemove', resetInactivityTimer);
-    window.addEventListener('keydown', resetInactivityTimer);
-    window.addEventListener('click', resetInactivityTimer);
-    window.addEventListener('scroll', resetInactivityTimer);
-    window.addEventListener('touchstart', resetInactivityTimer);
-}
-
-function removeInactivityListeners() {
-    window.removeEventListener('mousemove', resetInactivityTimer);
-    window.removeEventListener('keydown', resetInactivityTimer);
-    window.removeEventListener('click', resetInactivityTimer);
-    window.removeEventListener('scroll', resetInactivityTimer);
-    window.removeEventListener('touchstart', resetInactivityTimer);
-}
-
-window.addEventListener('DOMContentLoaded', checkInitialLockState);
-
-
-// Check lock configuration state immediately upon runtime initialization
-window.addEventListener('DOMContentLoaded', checkInitialLockState);
-
-
-// 5. Add/Commit New Task Data Routine
-document.getElementById('commitTaskBtn').onclick = () => {
-    const directive = document.getElementById('directiveInput').value;
-    const department = document.getElementById('departmentInput').value;
-    const deadline = document.getElementById('deadlineInput').value;
-
-    if (!deadline) { alert("Please provide a valid deadline allocation timestamp."); return; }
-
-    const transaction = db.transaction(["tasks"], "readwrite");
-    transaction.objectStore("tasks").add({ directive, department, deadline, status: 'pending', timestamp: Date.now() });
-    transaction.oncomplete = () => { 
-        loadTasks(); 
-        document.getElementById('deadlineInput').value = ''; 
-    };
-};
-// 6. UI Translation Interpolation Engine
-function applyLanguage() {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+        window.addEventListener(event, resetInactivityTimer);
     });
 }
 
-// 7. Network Intercept Listener
-window.addEventListener('online', updateNetworkStatus);
-window.addEventListener('offline', updateNetworkStatus);
-function updateNetworkStatus() {
-    const online = navigator.onLine;
-    document.getElementById('metricNetwork').textContent = online ? "Online" : "Offline";
-    if (online) console.log("Network online sync background engine trigger executed.");
+function removeInactivityListeners() {
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+        window.removeEventListener(event, resetInactivityTimer);
+    });
 }
 
-// 8. Load & Render Tasks From Local Cache Storage
+function injectSSOBadge() {
+    if (document.getElementById('enterpriseSSOBadge')) return;
+    const header = document.querySelector('.brand-container');
+    if (!header) return;
+    const badge = document.createElement('span');
+    badge.id = "enterpriseSSOBadge";
+    badge.textContent = "SSO SECURED";
+    badge.style.cssText = "font-size:0.65rem; background:#0d6efd; color:white; padding:2px 6px; border-radius:10px; font-weight:bold; margin-left:8px; letter-spacing:0.05em;";
+    header.appendChild(badge);
+}
+
+function removeSSOBanner() {
+    const badge = document.getElementById('enterpriseSSOBadge');
+    if (badge) badge.remove();
+}
+// =========================================================================
+// 📊 ENTERPRISE INTEGRATION ROUTINE (CSV STREAMER)
+// =========================================================================
+function exportDatabaseToCSV() {
+    if (!db) { alert("Database connection is not fully initialized."); return; }
+    const taskList = [];
+    const transaction = db.transaction("tasks", "readonly");
+    transaction.objectStore("tasks").openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) { taskList.push(cursor.value); cursor.continue(); } 
+        else { generateCSVDownloadStream(taskList); }
+    };
+}
+
+function generateCSVDownloadStream(tasks) {
+    const activeTasks = tasks.filter(t => t.status !== 'archived' && !t.isDeleted);
+    if (activeTasks.length === 0) { alert("No items inside the cache registry to export."); return; }
+
+    const headers = ["Task ID", "Corporate Directive", "Department Track", "Workflow Status", "Target Deadline"];
+    const csvRows = [
+        headers.join(","),
+        ...activeTasks.map(t => [
+            t.id,
+            `"${(t.directive || "").replace(/"/g, '""')}"`,
+            `"${(t.department || "").replace(/"/g, '""')}"`,
+            `"${t.status.toUpperCase()}"`,
+            `"${new Date(t.deadline).toLocaleString()}"`
+        ].join(","))
+    ];
+
+    const csvContent = "\uFEFF" + csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const virtualLink = document.createElement("a");
+    
+    virtualLink.href = URL.createObjectURL(blob);
+    virtualLink.setAttribute("download", `Trusswork_Directives_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(virtualLink);
+    virtualLink.click();
+    document.body.removeChild(virtualLink);
+}
+
+// =========================================================================
+// 📋 RENDERING PIPELINE & METRICS INTERPOLATION
+// =========================================================================
 function loadTasks() {
     if (!db) return;
     const lists = { 
@@ -556,223 +262,113 @@ function loadTasks() {
         active: document.getElementById('activeList'), 
         completed: document.getElementById('completedList') 
     };
+    if (!lists.pending || !lists.active || !lists.completed) return;
     Object.values(lists).forEach(l => l.innerHTML = '');
 
     let m = { total: 0, pending: 0, active: 0, completed: 0, overdue: 0 };
 
     db.transaction("tasks", "readonly").objectStore("tasks").openCursor().onsuccess = (e) => {
         const cursor = e.target.result;
-            if (cursor) {
-        const task = cursor.value;
+        if (cursor) {
+            const task = cursor.value;
+            if (task.status === 'archived' || task.isDeleted) { cursor.continue(); return; }
 
-        // CRITICAL FIX: Skip rendering if the task is archived or marked for trash
-        if (task.status === 'archived' || task.isDeleted) {
+            m.total++;
+            m[task.status]++;
+
+            if (task.status !== 'completed' && new Date(task.deadline).getTime() < Date.now()) m.overdue++;
+
+            const card = createTaskCard(task);
+            if (lists[task.status]) lists[task.status].appendChild(card);
             cursor.continue();
-            return;
-        }
-
-        m.total++;
-        m[task.status]++;
-
-        if (task.status !== 'completed' && new Date(task.deadline).getTime() < Date.now()) {
-            m.overdue++;
-        }
-
-        const card = createTaskCard(task);
-        lists[task.status].appendChild(card);
-        cursor.continue();
-    }
-
-            // Update Metrics Board Panel Elements
-            document.getElementById('metricTotal').textContent = m.total;
-            document.getElementById('metricPending').textContent = m.pending;
-            document.getElementById('metricActive').textContent = m.active;
-            document.getElementById('metricCompleted').textContent = m.completed;
-            document.getElementById('metricOverdue').textContent = m.overdue;
+        } else {
+            if(document.getElementById('metricTotal')) document.getElementById('metricTotal').textContent = m.total;
+            if(document.getElementById('metricPending')) document.getElementById('metricPending').textContent = m.pending;
+            if(document.getElementById('metricActive')) document.getElementById('metricActive').textContent = m.active;
+            if(document.getElementById('metricCompleted')) document.getElementById('metricCompleted').textContent = m.completed;
+            if(document.getElementById('metricOverdue')) document.getElementById('metricOverdue').textContent = m.overdue;
         }
     };
-
-
-// 9. Task Card Generation with Action Triggers & Time-Delta Badging Rules
+}
 function createTaskCard(task) {
-    // Fail-safe default object configuration to protect against missing keys
     const safeTask = {
         id: task?.id || Date.now(),
-        directive: task?.directive || task?.task || task?.title || 'Untitled Task Directive',
+        directive: task?.directive || 'Untitled Task Directive',
         department: task?.department || 'General',
         createdTimestamp: task?.createdTimestamp || Date.now(),
-        deadline: task?.deadline || new Date(Date.now() + 86400000).toISOString() // default tomorrow
+        deadline: task?.deadline || new Date(Date.now() + 86400000).toISOString()
     };
 
     const card = document.createElement('div');
     card.className = 'task-card';
     card.draggable = true;
     card.dataset.id = safeTask.id;
-    
-    // FORCE FULL-WIDTH STRETCHING AT THE ELEMENT LEVEL
-    card.style.width = '100%';
-    card.style.boxSizing = 'border-box';
 
-    let bClass = 'badge-safe';
-    let bText = 'SAFE';
-    
+    let bClass = 'badge-safe'; let bText = 'SAFE';
     if (task?.status !== 'completed') {
-        try {
-            const deadlineTime = new Date(safeTask.deadline).getTime();
-            if (!isNaN(deadlineTime)) {
-                const diff = deadlineTime - Date.now();
-                if (diff < 0) {
-                    bClass = 'badge-overdue';
-                    bText = 'OVERDUE';
-                } else if (diff <= 24 * 60 * 60 * 1000) {
-                    bClass = 'badge-soon';
-                    bText = 'DUE SOON';
-                }
-            }
-        } catch (e) {
-            console.error("Date calculation error:", e);
-        }
+        const diff = new Date(safeTask.deadline).getTime() - Date.now();
+        if (diff < 0) { bClass = 'badge-overdue'; bText = 'OVERDUE'; }
+        else if (diff <= 86400000) { bClass = 'badge-soon'; bText = 'DUE SOON'; }
     }
 
-    // Define clean, fully string-safe black-and-white vector icons
-    const editIcon = typeof window.editIcon !== 'undefined' ? window.editIcon : `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-
-    // Format display dates safely
-    const formatLocDate = (val) => {
-        const d = new Date(val);
-        return isNaN(d.getTime()) ? 'Not Specified' : d.toLocaleString();
-    };
-
-    // 1. Updated HTML card injection - Removed the "x" archive button
     card.innerHTML = `
-        <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
-            
-            <!-- Rigid Action Box: Contains only the Edit Button -->
-            <div style="position: absolute; right: 14px; top: 14px; display: flex; align-items: center; justify-content: flex-end; z-index: 99; width: 24px; height: 24px;">
-                <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 24px; height: 24px; box-sizing: border-box; flex-shrink: 0;">
+        <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+            <div style="position: absolute; right: 14px; top: 14px; display: flex; gap: 8px; z-index: 99;">
+                <button class="card-edit-trigger" title="Edit Task" style="background: none; border: none; cursor: pointer; color: #fff; opacity: 0.7;">
                     <span style="display: flex; align-items: center; justify-content: center; width: 16px; height: 16px;">${editIcon}</span>
                 </button>
+                <button class="card-delete-trigger" title="Archive Task" style="background: none; border: none; cursor: pointer; color: #ff4d4d; opacity: 0.7;">✕</button>
             </div>
-
-            <!-- Content Area: Safe margin protects text layout from colliding with button -->
-            <div style="padding-right: 40px; width: 100%; box-sizing: border-box;">
-                <div class="card-display-view" style="width: 100%; display: block;">
-                    <div class="card-directive" style="font-size: 15px; font-weight: 500; color: var(--text-primary, #ffffff); line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
+            <div style="padding-right: 45px; width: 100%; box-sizing: border-box;">
+                <div class="card-display-view" style="display: block;">
+                    <div class="card-directive" style="font-size: 15px; font-weight: 500; word-break: break-word;">${safeTask.directive}</div>
                 </div>
-                
                 <div class="card-edit-view" style="display: none; width: 100%;">
-                    <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: var(--text-primary, #ffffff); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${safeTask.directive}</textarea>
+                    <textarea class="card-directive-input" style="width: 100%; background: #000; color: #fff; border-radius: 4px;">${safeTask.directive}</textarea>
                 </div>
-
-                <div class="card-dept" style="font-size: 13px; opacity: 0.7; color: var(--text-primary, #ffffff); margin-top: 4px;">${safeTask.department}</div>
+                <div class="card-dept" style="font-size: 13px; opacity: 0.7; margin-top: 4px;">${safeTask.department}</div>
                 <div class="card-badge ${bClass}" style="width: max-content; margin-top: 4px;">${bText}</div>
             </div>
-            
-            <!-- Bottom Footer Trackers -->
-            <div style="font-size: 11px; color: var(--text-secondary, #aaaaaa); margin-top: 8px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(128, 128, 128, 0.15); padding-top: 6px; width: 100%;">
-                <div><span style="opacity: 0.6;">Created:</span> ${formatLocDate(safeTask.createdTimestamp)}</div>
-                <div><span style="opacity: 0.6;">Deadline:</span> ${formatLocDate(safeTask.deadline)}</div>
+            <div style="font-size: 11px; opacity: 0.6; margin-top: 8px; border-top: 1px solid rgba(128,128,128,0.15); padding-top: 6px;">
+                <div>Created: ${new Date(safeTask.createdTimestamp).toLocaleString()}</div>
+                <div>Deadline: ${new Date(safeTask.deadline).toLocaleString()}</div>
             </div>
         </div>
     `;
 
-
-    // 2. Query elements for listener bindings
     const editBtn = card.querySelector('.card-edit-trigger');
+    const deleteBtn = card.querySelector('.card-delete-trigger');
     const displayView = card.querySelector('.card-display-view');
     const editView = card.querySelector('.card-edit-view');
     const directiveInput = card.querySelector('.card-directive-input');
 
-    // 3. Hover effects for the professional layout
-    if (editBtn) {
-        editBtn.addEventListener('mouseenter', () => editBtn.style.opacity = '1');
-        editBtn.addEventListener('mouseleave', () => editBtn.style.opacity = '0.8');
-    }
-
-    // 4. Dual-Action Edit/Save Listener Integration
-    if (editBtn) {
-        editBtn.addEventListener('click', (e) => {
+    if (editBtn && displayView && editView && directiveInput) {
+        editBtn.onclick = (e) => {
             e.stopPropagation();
-
-            const isEditing = editView.style.display === 'block';
-
-            if (!isEditing) {
-                displayView.style.display = 'none';
-                editView.style.display = 'block';
-                editBtn.innerHTML = saveIcon;
-                editBtn.title = 'Save Changes';
-                directiveInput.focus();
-
-                const length = directiveInput.value.length;
-                directiveInput.setSelectionRange(length, length);
+            if (editView.style.display !== 'block') {
+                displayView.style.display = 'none'; editView.style.display = 'block';
+                editBtn.innerHTML = saveIcon; directiveInput.focus();
             } else {
                 const updatedText = directiveInput.value.trim();
-
-                if (updatedText === '') {
-                    alert('Task directive cannot be blank!');
-                    return;
-                }
-
+                if (!updatedText) return alert('Task directive cannot be blank!');
                 task.directive = updatedText;
-
-                if (typeof db !== 'undefined' && db) {
-                    try {
-                        const transaction = db.transaction(["tasks"], "readwrite");
-                        const store = transaction.objectStore("tasks");
-                        const request = store.put(task);
-
-                        request.onsuccess = () => {
-                            console.log(`Trusswork Engine: Successfully updated directive text for ID [${task.id}]`);
-                            card.querySelector('.card-directive').textContent = updatedText;
-                            displayView.style.display = 'block';
-                            editView.style.display = 'none';
-                            editBtn.innerHTML = editIcon;
-                            editBtn.title = 'Edit Task';
-                        };
-
-                        request.onerror = (err) => {
-                            console.error("Database save failed:", err);
-                        };
-                    } catch (error) {
-                        console.error("Transaction exception error handling:", error);
-                    }
-                }
+                const transaction = db.transaction(["tasks"], "readwrite");
+                transaction.objectStore("tasks").put(task).onsuccess = () => {
+                    card.querySelector('.card-directive').textContent = updatedText;
+                    displayView.style.display = 'block'; editView.style.display = 'none';
+                    editBtn.innerHTML = editIcon;
+                };
             }
-        });
+        };
     }
 
-    const deleteBtn = card.querySelector('.card-delete-trigger');
     if (deleteBtn) {
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-
-            if (!window.archivedTasks) {
-                window.archivedTasks = [];
-            }
-
             window.archivedTasks.push(task);
-            card.remove();
-
-            if (typeof db !== 'undefined' && db) {
-                try {
-                    const transaction = db.transaction(["tasks"], "readwrite");
-                    const store = transaction.objectStore("tasks");
-                    task.status = 'archived';
-                    const request = store.put(task);
-
-                    request.onsuccess = () => {
-                        console.log("Trusswork Data Engine: Task successfully routed to temporary session trash tray in IndexedDB.");
-                    };
-
-                    request.onerror = (error) => {
-                        console.error("Failed to update database record status:", error);
-                    };
-                } catch (error) {
-                    console.error("Database transaction failed:", error);
-                }
-            }
-
-            console.log("Task successfully routed to temporary session trash tray:", window.archivedTasks);
+            task.status = 'archived';
+            const transaction = db.transaction(["tasks"], "readwrite");
+            transaction.objectStore("tasks").put(task).onsuccess = () => { card.remove(); loadTasks(); };
         });
     }
 
@@ -780,322 +376,230 @@ function createTaskCard(task) {
     card.addEventListener('dragend', () => card.classList.remove('dragging'));
     return card;
 }
-
-// 🗑️ Core Transactional Handler: Direct Record Purge from IndexedDB Store
-function executeTaskDeletion(taskId) {
-    if (!confirm("Are you sure you want to permanently archive and delete this task directive from the system cache?")) return;
-
-    const transaction = db.transaction(["tasks"], "readwrite");
-    const store = transaction.objectStore("tasks");
-    
-    store.delete(taskId);
-    
-    transaction.oncomplete = () => {
-        console.log(`Trusswork Data Engine: Cleared task reference record ID [${taskId}] from persistent storage indices.`);
-        loadTasks();
-    };
-}
-
-
-// 10. Drag and Drop Interactive Subsystem Execution
-document.querySelectorAll('.board-column').forEach(col => {
-    col.addEventListener('dragover', (e) => e.preventDefault());
-    col.addEventListener('drop', () => {
-        const dragging = document.querySelector('.dragging');
-        if (!dragging) return;
-        
-        const transaction = db.transaction(["tasks"], "readwrite");
-        const store = transaction.objectStore("tasks");
-        store.get(parseInt(dragging.dataset.id)).onsuccess = (e) => {
-            const data = e.target.result;
-            data.status = col.dataset.status;
-            store.put(data);
-        };
-        transaction.oncomplete = loadTasks;
-    });
-});   
-
-// Auto-evaluate timelines every 30 seconds 
-setInterval(loadTasks, 30000);
-updateNetworkStatus();
-
 // =========================================================================
-// 10. Form Submission & Task Commitment Handler (Tailored for index.html)
+// 🛒 INITIALIZATION AND EVENT COORDINATOR
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Target the button precisely using its actual HTML ID matching Line 79
-    const commitBtn = document.getElementById('commitTaskBtn');
+    if (window.appInitialized) return;
+    window.appInitialized = true;
 
+    const boardContainer = document.getElementById('boardContainer');
+    const viewKanbanBtn = document.getElementById('viewKanbanBtn');
+    const viewGridBtn = document.getElementById('viewGridBtn');
+
+    if (viewKanbanBtn && boardContainer) {
+        viewKanbanBtn.onclick = () => {
+            boardContainer.className = "board-container kanban-view";
+            viewKanbanBtn.classList.add('active');
+            if (viewGridBtn) viewGridBtn.classList.remove('active');
+        };
+    }
+    if (viewGridBtn && boardContainer) {
+        viewGridBtn.onclick = () => {
+            boardContainer.className = "board-container grid-view";
+            viewGridBtn.classList.add('active');
+            if (viewKanbanBtn) viewKanbanBtn.classList.remove('active');
+        };
+    }
+
+    const loginSubmit = document.getElementById('gatekeeperSubmitBtn');
+    const loginInput = document.getElementById('gatekeeperPasscode');
+    const lockBtn = document.getElementById('lockTerminalBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    if (loginSubmit) loginSubmit.onclick = validatePasscode;
+    if (lockBtn) lockBtn.onclick = lockTerminal;
+    if (exportBtn) exportBtn.onclick = exportDatabaseToCSV;
+    if (loginInput) {
+        loginInput.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); validatePasscode(); } };
+    }
+
+    const langSelect = document.getElementById('langSelect');
+    if (langSelect) langSelect.addEventListener('change', (e) => { currentLang = e.target.value; applyLanguage(); });
+
+    const adminDrawer = document.getElementById('adminPanelDrawer');
+    const openAdminBtn = document.getElementById('openAdminDrawerBtn');
+    const closeAdminBtn = document.getElementById('closeAdminDrawerBtn');
+    const saveAdminBtn = document.getElementById('saveAdminConfigBtn');
+
+    if (openAdminBtn) {
+        openAdminBtn.onclick = () => {
+            const activeTier = localStorage.getItem(LICENSED_TIER_KEY) || "CORE";
+            const currentPass = localStorage.getItem(CUSTOM_PASSCODES_PREFIX + activeTier) || DEFAULT_TIERS[activeTier] || "TrussworkCore2026";
+            const currentTimeout = localStorage.getItem(CUSTOM_TIMEOUT_KEY) || "15";
+            document.getElementById('adminPasscodeOverride').value = currentPass;
+            document.getElementById('adminTimeoutOverride').value = currentTimeout;
+            if (adminDrawer) adminDrawer.style.display = "flex";
+        };
+    }
+    if (closeAdminBtn) { closeAdminBtn.onclick = () => { if (adminDrawer) adminDrawer.style.display = "none"; }; }
+    if (saveAdminBtn) {
+        saveAdminBtn.onclick = () => {
+            const activeTier = localStorage.getItem(LICENSED_TIER_KEY) || "CORE";
+            const newPass = document.getElementById('adminPasscodeOverride').value.trim();
+            const newTimeout = document.getElementById('adminTimeoutOverride').value;
+            if(!newPass) return alert("Passcode parameter cannot be left blank.");
+            localStorage.setItem(CUSTOM_PASSCODES_PREFIX + activeTier, newPass);
+            localStorage.setItem(CUSTOM_TIMEOUT_KEY, newTimeout);
+            alert("System Admin Patch Saved!");
+            if (adminDrawer) adminDrawer.style.display = "none";
+            resetInactivityTimer();
+        };
+    }
+
+    const commitBtn = document.getElementById('commitTaskBtn');
     if (commitBtn) {
         commitBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            const directiveSelect = document.getElementById('directiveInput') || document.querySelector('select');
+            const deptSelect = document.getElementById('departmentInput');
+            const deadlineInput = document.getElementById('deadlineInput');
 
-            // 2. Safe target inputs using exact ID associations from your DOM structure
-            const directiveSelect = document.getElementById('directiveInput') || document.querySelector('select'); 
-            const deptSelect = document.getElementById('departmentInput'); // Line 69 match
-            const deadlineInput = document.getElementById('deadlineInput'); // Line 77 match
+            if (!directiveSelect || !directiveSelect.value) return alert("Select a valid Corporate Directive.");
 
-            // Safety fallback if no directive option is highlighted or chosen
-            if (!directiveSelect || !directiveSelect.value) {
-                alert("Please select a valid Corporate Directive before committing.");
-                return;
-            }
-
-            // 3. Assemble a robust, clean task object tailored directly to your layout card template
             const newTask = {
-                id: 'task_' + Date.now(),
+                id: Date.now(),
                 directive: directiveSelect.value,
                 department: deptSelect ? deptSelect.value : 'Operations',
                 status: 'pending',
-                createdTimestamp: Date.now(), // Anchors your clean card creation timestamp view
+                createdTimestamp: Date.now(),
                 deadline: deadlineInput && deadlineInput.value ? deadlineInput.value : new Date(Date.now() + 86400000).toISOString()
             };
 
-            // 4. Save to the persistent IndexedDB engine instance data layer
-            if (typeof db !== 'undefined' && db) {
-                try {
-                    const transaction = db.transaction(["tasks"], "readwrite");
-                    const store = transaction.objectStore("tasks");
-                    const request = store.add(newTask);
-
-                    request.onsuccess = () => {
-                        console.log("Trusswork Data Engine: Successfully committed fresh directive state to persistent storage indices.");
-                        
-                        // Clear out deadline selector back to empty state cleanly
-                        if (deadlineInput) deadlineInput.value = '';
-                        
-                        // Force an immediate UI lane layout update block redraw
-                        if (typeof loadTasks === 'function') {
-                            loadTasks();
-                        }
-                    };
-
-                    request.onerror = (error) => {
-                        console.error("Database save failed inside form submission transaction:", error);
-                    };
-                } catch (err) {
-                    console.error("Failed to build write transaction execution runtime script:", err);
-                }
-            } else {
-                console.error("IndexedDB connection missing.");
-                alert("Database engine is not fully ready. Please try again.");
-            }
+            const transaction = db.transaction(["tasks"], "readwrite");
+            transaction.objectStore("tasks").add(newTask).onsuccess = () => {
+                if (deadlineInput) deadlineInput.value = '';
+                loadTasks();
+            };
         });
-        console.log("Trusswork Engine: Click listener successfully attached to #commitTaskBtn anchor element.");
-    } else {
-        console.error("Trusswork Engine: Unable to locate element #commitTaskBtn on the current document DOM skeleton.");
-    }
-});
-
-// ==========================================================================
-// 📊 ENTERPRISE INTEGRATION: DATA STREAM EXPORT ROUTINE (EXCEL/CSV PIPELINE)
-// ==========================================================================
-document.getElementById('exportBtn').onclick = exportDatabaseToCSV;
-
-function exportDatabaseToCSV() {
-    if (!db) {
-        alert("Database connection is not fully initialized. Please try again.");
-        return;
     }
 
-    const taskList = [];
-    const transaction = db.transaction("tasks", "readonly");
-    const store = transaction.objectStore("tasks");
-
-    store.openCursor().onsuccess = (e) => {
-        const cursor = e.target.result;
-        if (cursor) {
-            taskList.push(cursor.value);
-            cursor.continue();
-        } else {
-            // Callback execution once all tasks have been gathered from IndexedDB cache
-            generateCSVDownloadStream(taskList);
-        }
-    };
-}
-
-function generateCSVDownloadStream(tasks) {
-    if (tasks.length === 0) {
-        alert("There are currently no documented tasks inside the terminal cache storage registry to export.");
-        return;
-    }
-
-    // 1. Configure localized document structured array headers 
-    const headers = ["Task ID", "Corporate Directive", "Department Track", "Workflow Status", "Target Deadline String"];
-    
-    // 2. Map and escape special character sequences in cell columns safely
-    const csvRows = [
-        headers.join(","), // Header row definition
-        ...tasks.map(task => [
-            task.id,
-            `"${task.directive.replace(/"/g, '""')}"`,
-            `"${task.department.replace(/"/g, '""')}"`,
-            `"${task.status.toUpperCase()}"`,
-            `"${new Date(task.deadline).toLocaleString()}"`
-        ].join(","))
-    ];
-
-    // 3. Compile lines and configure standard raw UTF-8 binary stream data container
-    const csvContent = "\uFEFF" + csvRows.join("\n"); // Include BOM tag parameters for flawless native Microsoft Excel column auto-parsing
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    
-    // 4. Construct a virtual anchor object element framework to force programmatic file save handling
-    const virtualLink = document.createElement("a");
-    const fileTimestamp = new Date().toISOString().slice(0, 10);
-    
-    virtualLink.href = URL.createObjectURL(blob);
-    virtualLink.setAttribute("download", `Trusswork_Master_Directives_Export_${fileTimestamp}.csv`);
-    virtualLink.style.visibility = 'hidden';
-    
-    document.body.appendChild(virtualLink);
-    virtualLink.click();
-    document.body.removeChild(virtualLink);
-    
-    console.log(`Trusswork Data Engine: Successfully exported ${tasks.length} corporate records directly into download stream logs.`);
-}
-// Ensure everything fires together once the DOM finishes compiling
-document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.board-column').forEach(col => {
+        col.addEventListener('dragover', (e) => e.preventDefault());
+        col.addEventListener('drop', () => {
+            const dragging = document.querySelector('.dragging');
+            if (!dragging) return;
+            const transaction = db.transaction(["tasks"], "readwrite");
+            const store = transaction.objectStore("tasks");
+            store.get(parseInt(dragging.dataset.id)).onsuccess = (e) => {
+                const data = e.target.result;
+                if(data) { data.status = col.dataset.status; store.put(data); }
+            };
+            transaction.oncomplete = loadTasks;
+        });
+    });
     const trashBinElement = document.getElementById('trashBin');
     const archiveModal = document.getElementById('archiveModal');
-    const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
     const archiveList = document.getElementById('archiveList');
+    const closeArchiveModalBtn = document.getElementById('closeArchiveModal');
 
-    // 1. CLICK TO OPEN THE GARBAGE BIN
-    if (typeof trashBinElement !== 'undefined' && trashBinElement) {
+    if (trashBinElement && archiveModal && archiveList) {
         trashBinElement.addEventListener('click', () => {
-            // Instantly compile the text array layout template items
-            if (archiveList) {
-                archiveList.innerHTML = ''; // Clear prior loop artifacts
-                
-                // If no entries live in our memory state array yet
-                if (!window.archivedTasks || window.archivedTasks.length === 0) {
-                    archiveList.innerHTML = '<li style="text-align:center; color:#6c757d; padding:20px; list-style:none;">Your archive is currently empty!</li>';
-                } else {
-                    // Loop through and render out whatever tasks were deleted this session
-                    window.archivedTasks.forEach((task, index) => {
-                        const li = document.createElement('li');
-                        li.className = 'archive-item';
-                        
-                        const taskHeading = task.title || task.name || task.text || task.taskName || `Task #${task.id || index + 1}`;
-                        const taskSubheading = task.department || task.category || 'General Log';
-                        
-                        li.innerHTML = `
-                            <div class="archive-item-info">
-                                <strong>${taskHeading}</strong>
-                                <small style="text-transform: capitalize; color:#6c757d;">${taskSubheading}</small>
+            archiveList.innerHTML = '';
+            if (!window.archivedTasks || window.archivedTasks.length === 0) {
+                archiveList.innerHTML = '<li style="text-align:center; color:#6c757d; padding:20px; list-style:none;">Your archive is currently empty!</li>';
+            } else {
+                window.archivedTasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'archive-item';
+                    li.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 8px 12px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                            <div>
+                                <strong>${task.directive || "Untitled Task"}</strong><br>
+                                <small style="color:#6c757d">${task.department || "General"}</small>
                             </div>
-                            <button class="restore-btn" data-index="${index}" style="margin-left: 10px; background-color:#28a745; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Restore</button>
-                        `;
+                            <button class="restore-btn" data-index="${index}" style="background:#28a745; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Restore</button>
+                        </div>
+                    `;
+                    
+                    li.querySelector('.restore-btn').addEventListener('click', (ev) => {
+                        const itemIndex = parseInt(ev.target.getAttribute('data-index'));
+                        const [taskToRestore] = window.archivedTasks.splice(itemIndex, 1);
+                        taskToRestore.status = 'pending'; 
                         
-                        // Handle the single item restoration trigger action logic
-                        li.querySelector('.restore-btn').addEventListener('click', (e) => {
-                            const itemIndex = parseInt(e.target.getAttribute('data-index'));
-                            const taskToRestore = window.archivedTasks[itemIndex];
-                            
-                            // Delete row item index from memory array stack trace
-                            window.archivedTasks.splice(itemIndex, 1);
-                            
-                            // Call your app's existing rendering system to pop it back on screen
-                            if (typeof createTaskCard === 'function') {
-                                const restoredCard = createTaskCard(taskToRestore);
-                                
-                                // SMART COLUMN PICKER: Scans for common column container bodies in your app
-                                const targetColumn = document.querySelector('.column-body') || 
-                                                     document.querySelector('.kanban-column') || 
-                                                     document.getElementById('pendingColumn') ||
-                                                     document.querySelector('.task-column');
-                                
-                                if (targetColumn) {
-                                    targetColumn.appendChild(restoredCard);
-                                    console.log("Card successfully attached back to your viewport layout.");
-                                } else {
-                                    // Fallback: Pin it to your first main workspace layout section if column names mismatch
-                                    const mainBoard = document.querySelector('main') || document.body;
-                                    mainBoard.appendChild(restoredCard);
-                                }
-                            }
-                            
-                            // RE-RENDER THE TRAY INSTANTLY (Instead of breaking out and closing it)
+                        const trans = db.transaction(["tasks"], "readwrite");
+                        trans.objectStore("tasks").put(taskToRestore);
+                        trans.oncomplete = () => {
+                            loadTasks();
                             trashBinElement.click(); 
-                        });
-                        
-                        archiveList.appendChild(li);
+                        };
                     });
-                }
+                    archiveList.appendChild(li);
+                });
             }
-            
-            // Pop the window visible onto the screen viewport layout
-            if (archiveModal) {
-                archiveModal.style.display = 'flex';
-            }
+            archiveModal.style.display = "flex";
         });
     }
 
-    // 2. CLICK THE MINI X BUTTON TO CLOSE THE TRASH POPUP
-    if (typeof closeArchiveModalBtn !== 'undefined' && closeArchiveModalBtn) {
-        closeArchiveModalBtn.addEventListener('click', () => {
-            if (archiveModal) archiveModal.style.display = 'none';
-        });
+    if (closeArchiveModalBtn && archiveModal) {
+        closeArchiveModalBtn.onclick = () => { archiveModal.style.display = "none"; };
     }
 
-    // 3. CLICK OUTSIDE THE CARD TO VANISH THE POPUP OVERLAY WINDOW
     window.addEventListener('click', (event) => {
         if (archiveModal && event.target === archiveModal) {
             archiveModal.style.display = 'none';
         }
     });
+
+    const trashTarget = document.getElementById('trashBin');
+    if (trashTarget) {
+        trashTarget.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            trashTarget.style.transform = 'scale(1.25)';
+            trashTarget.style.transition = 'transform 0.2s ease';
+            trashTarget.style.boxShadow = '0 0 15px rgba(220, 53, 69, 0.6)';
+        });
+
+        trashTarget.addEventListener('dragleave', () => {
+            trashTarget.style.transform = 'scale(1)';
+            trashTarget.style.boxShadow = 'none';
+        });
+
+        trashTarget.addEventListener('drop', (e) => {
+            e.preventDefault();
+            trashTarget.style.transform = 'scale(1)';
+            trashTarget.style.boxShadow = 'none';
+
+            const activeCard = document.querySelector('.task-card.dragging');
+            if (activeCard) {
+                const deleteBtn = activeCard.querySelector('.card-delete-trigger');
+                activeCard.style.transition = 'all 0.2s ease-out';
+                activeCard.style.opacity = '0';
+                activeCard.style.transform = 'scale(0.5)';
+                
+                setTimeout(() => {
+                    if (deleteBtn) {
+                        deleteBtn.click();
+                    } else {
+                        const idToPurge = parseInt(activeCard.dataset.id);
+                        executeTaskDeletion(idToPurge);
+                    }
+                }, 200);
+            }
+        });
+    }
+
+    checkInitialLockState();
 });
 
-// --- DRAG TO TRASH FUNCTIONALITY (ROBUST MATCH) ---
-const trashTarget = document.getElementById('trashBin');
-
-if (trashTarget) {
-    // 1. Highlight the trash bin when an active card is hovered over it
-    trashTarget.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Critical to allow dropping
-        trashTarget.style.transform = 'scale(1.25)'; 
-        trashTarget.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        trashTarget.style.boxShadow = '0 0 15px rgba(220, 53, 69, 0.6)'; 
-    });
-
-    // 2. Remove the highlight effects if the card is dragged away
-    trashTarget.addEventListener('dragleave', () => {
-        trashTarget.style.transform = 'scale(1)';
-        trashTarget.style.boxShadow = 'none';
-    });
-
-    trashTarget.addEventListener('drop', (e) => {
-        e.preventDefault();
-        trashTarget.style.transform = 'scale(1)';
-        trashTarget.style.boxShadow = 'none';
-
-        // Find the element currently being dragged
-        const activeCard = document.querySelector('.task-card.dragging');
-        
-        if (activeCard) {
-            // DIRECT INHERITANCE FIX: Locates your original custom event delete hook inside the node
-            const deleteBtn = activeCard.querySelector('.card-delete-trigger');
-            
-            if (deleteBtn) {
-                // Instantly simulates the original working click functionality
-                deleteBtn.click();
-            } else {
-                // Secondary Fallback if click target is missing
-                const idToPurge = activeCard.dataset.id;
-                if (typeof deleteTask === 'function') deleteTask(idToPurge);
-                activeCard.remove();
-            }
-
-            // Cleanly slide and shrink the card away visually
-            activeCard.style.transition = 'all 0.2s ease-out';
-            activeCard.style.opacity = '0';
-            activeCard.style.transform = 'scale(0.5)';
-            setTimeout(() => activeCard.remove(), 200);
-        }
+function applyLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[currentLang] && i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
     });
 }
 
+function updateNetworkStatus() {
+    const metric = document.getElementById('metricNetwork');
+    if (metric) metric.textContent = navigator.onLine ? "Online" : "Offline";
+}
 
+function executeTaskDeletion(taskId) {
+    const transaction = db.transaction(["tasks"], "readwrite");
+    transaction.objectStore("tasks").delete(taskId);
+    transaction.oncomplete = () => { loadTasks(); };
+}
 
-
-
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+setInterval(loadTasks, 30000);
