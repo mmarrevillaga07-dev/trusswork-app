@@ -643,20 +643,19 @@ function createTaskCard(task) {
         return isNaN(d.getTime()) ? 'Not Specified' : d.toLocaleString();
     };
 
-    // 1. Fully-formed, robust HTML card injection with rigid button spacing and protective text padding
+    // 1. Updated HTML card injection - Removed the "x" archive button
     card.innerHTML = `
         <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
             
-            <!-- Rigid Action Box: Permanently Anchored to Upper Right Corner -->
-            <div style="position: absolute; right: 14px; top: 14px; display: flex; gap: 12px; align-items: center; justify-content: flex-end; z-index: 99; min-width: 60px; height: 24px;">
+            <!-- Rigid Action Box: Contains only the Edit Button -->
+            <div style="position: absolute; right: 14px; top: 14px; display: flex; align-items: center; justify-content: flex-end; z-index: 99; width: 24px; height: 24px;">
                 <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 24px; height: 24px; box-sizing: border-box; flex-shrink: 0;">
                     <span style="display: flex; align-items: center; justify-content: center; width: 16px; height: 16px;">${editIcon}</span>
                 </button>
-                <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 0; margin: 0; font-size: 22px; font-weight: bold; line-height: 1; color: #dc3545; opacity: 0.9; transition: transform 0.2s, opacity 0.2s; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; flex-shrink: 0;">&times;</button>
             </div>
 
-            <!-- Content Area: Safe margin protects text layout from colliding with buttons -->
-            <div style="padding-right: 70px; width: 100%; box-sizing: border-box;">
+            <!-- Content Area: Safe margin protects text layout from colliding with button -->
+            <div style="padding-right: 40px; width: 100%; box-sizing: border-box;">
                 <div class="card-display-view" style="width: 100%; display: block;">
                     <div class="card-directive" style="font-size: 15px; font-weight: 500; color: var(--text-primary, #ffffff); line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
                 </div>
@@ -676,6 +675,7 @@ function createTaskCard(task) {
             </div>
         </div>
     `;
+
 
     // 2. Query elements for listener bindings
     const editBtn = card.querySelector('.card-edit-trigger');
@@ -1045,4 +1045,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// --- DRAG TO TRASH FUNCTIONALITY ---
+const trashTarget = document.getElementById('trashBin');
+
+if (trashTarget) {
+    // 1. Highlight the trash bin when an active card is hovered over it
+    trashTarget.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Required to allow a drop event to trigger
+        trashTarget.style.transform = 'scale(1.25)'; // Grows slightly for a responsive tactile feel
+        trashTarget.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        trashTarget.style.boxShadow = '0 0 15px rgba(220, 53, 69, 0.6)'; // Soft red outer glow
+    });
+
+    // 2. Remove the highlight effects if the card is dragged away
+    trashTarget.addEventListener('dragleave', () => {
+        trashTarget.style.transform = 'scale(1)';
+        trashTarget.style.boxShadow = 'none';
+    });
+
+    // 3. Delete the task card from both memory and DOM when dropped inside
+    trashTarget.addEventListener('drop', (e) => {
+        e.preventDefault();
+        trashTarget.style.transform = 'scale(1)';
+        trashTarget.style.boxShadow = 'none';
+
+        // Find the card being dragged (Make sure your dragstart handler adds the 'dragging' class)
+        const activeCard = document.querySelector('.task-card.dragging');
+        
+        if (activeCard) {
+            const idToPurge = activeCard.dataset.id;
+            
+            // Check if your app uses a built-in global tasks array or a delete function
+            if (typeof window.deleteTask === 'function') {
+                window.deleteTask(idToPurge);
+            } else if (typeof window.tasks !== 'undefined') {
+                // Core data fallback: filter array and sync storage
+                window.tasks = window.tasks.filter(t => String(t.id) !== String(idToPurge));
+                localStorage.setItem('tasks', JSON.stringify(window.tasks));
+            }
+
+            // Instantly animate out and remove from interface DOM
+            activeCard.style.transition = 'all 0.2s ease-out';
+            activeCard.style.opacity = '0';
+            activeCard.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                activeCard.remove();
+                
+                // Re-calculate the bottom summary panel totals if function exists
+                if (typeof window.updateTaskCounts === 'function') {
+                    window.updateTaskCounts();
+                } else if (typeof window.renderTasks === 'function') {
+                    window.renderTasks(); // Or force fresh redraw
+                }
+            }, 200);
+            
+            console.log(`Task ${idToPurge} successfully dropped into the trash bin.`);
+        }
+    });
+}
+
 
