@@ -643,44 +643,37 @@ function createTaskCard(task) {
         return isNaN(d.getTime()) ? 'Not Specified' : d.toLocaleString();
     };
 
-        // 1. Fully-formed, robust HTML card injection with clean, responsive element flows
+    // 1. Fully-formed, robust HTML card injection with absolute positioning and safe text barriers
     card.innerHTML = `
-        <div class="task-card-inner" style="display: flex; flex-direction: column; gap: 10px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+        <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
             
-            <!-- Main Content Grid with Action Triggers Flowing Flexibly -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%;">
-                <!-- Task Body Fields -->
-                <div style="flex: 1; min-width: 0;">
-                    <div class="card-display-view" style="width: 100%; display: block;">
-                        <div class="card-directive" style="font-size: 15px; font-weight: 500; color: var(--text-primary, #ffffff); line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
-                    </div>
-                    
-                    <div class="card-edit-view" style="display: none; width: 100%;">
-                        <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: var(--text-primary, #ffffff); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${safeTask.directive}</textarea>
-                    </div>
-                </div>
-
-                <!-- Clean Flex Action Box: Prevents overlap and scales with theme -->
-                <div style="display: flex; gap: 12px; align-items: center; flex-shrink: 0; margin-top: 2px;">
-                    <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 18px; height: 18px;">${editIcon}</button>
-                    <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 22px; font-weight: bold; line-height: 1; color: #dc3545; opacity: 0.8; transition: opacity 0.2s; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">&times;</button>
-                </div>
+            <!-- Permanent Action Box: Anchored to Upper Right Corner -->
+            <div style="position: absolute; right: 12px; top: 12px; display: flex; gap: 10px; align-items: center; z-index: 99;">
+                <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 20px; height: 20px;">${editIcon}</button>
+                <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 22px; font-weight: bold; line-height: 1; color: #dc3545; opacity: 0.9; transition: transform 0.2s, opacity 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
             </div>
 
-            <!-- Meta Details Stacked Below Content -->
-            <div style="width: 100%; display: flex; flex-direction: column; gap: 4px;">
-                <div class="card-dept" style="font-size: 13px; opacity: 0.7; color: var(--text-primary, #ffffff);">${safeTask.department}</div>
-                <div class="card-badge ${bClass}" style="width: max-content; margin-top: 2px;">${bText}</div>
+            <!-- Content Area: Padding-Right guarantees text never reaches the buttons -->
+            <div style="padding-right: 55px; width: 100%; box-sizing: border-box;">
+                <div class="card-display-view" style="width: 100%; display: block;">
+                    <div class="card-directive" style="font-size: 15px; font-weight: 500; color: var(--text-primary, #ffffff); line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
+                </div>
+                
+                <div class="card-edit-view" style="display: none; width: 100%;">
+                    <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: var(--text-primary, #ffffff); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${safeTask.directive}</textarea>
+                </div>
+
+                <div class="card-dept" style="font-size: 13px; opacity: 0.7; color: var(--text-primary, #ffffff); margin-top: 4px;">${safeTask.department}</div>
+                <div class="card-badge ${bClass}" style="width: max-content; margin-top: 4px;">${bText}</div>
             </div>
             
             <!-- Bottom Footer Trackers -->
-            <div style="font-size: 11px; color: var(--text-secondary, #aaaaaa); margin-top: 4px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(128, 128, 128, 0.15); padding-top: 6px; width: 100%;">
+            <div style="font-size: 11px; color: var(--text-secondary, #aaaaaa); margin-top: 8px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(128, 128, 128, 0.15); padding-top: 6px; width: 100%;">
                 <div><span style="opacity: 0.6;">Created:</span> ${formatLocDate(safeTask.createdTimestamp)}</div>
                 <div><span style="opacity: 0.6;">Deadline:</span> ${formatLocDate(safeTask.deadline)}</div>
             </div>
         </div>
     `;
-
 
     // 2. Query elements for listener bindings
     const editBtn = card.querySelector('.card-edit-trigger');
