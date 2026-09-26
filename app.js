@@ -1064,7 +1064,6 @@ if (trashTarget) {
         trashTarget.style.boxShadow = 'none';
     });
 
-    // 3. Delete the task card from both memory and DOM when dropped inside
     trashTarget.addEventListener('drop', (e) => {
         e.preventDefault();
         trashTarget.style.transform = 'scale(1)';
@@ -1074,44 +1073,24 @@ if (trashTarget) {
         const activeCard = document.querySelector('.task-card.dragging');
         
         if (activeCard) {
-            // Find the ID string or numerical value
-            const idToPurge = activeCard.dataset.id;
+            // DIRECT INHERITANCE FIX: Locates your original custom event delete hook inside the node
+            const deleteBtn = activeCard.querySelector('.card-delete-trigger');
             
-            // DYNAMIC DETECTOR: Checks your script's exact internal variables/functions
-            if (typeof window.deleteTask === 'function') {
-                window.deleteTask(idToPurge);
-            } else if (typeof deleteTask === 'function') {
-                deleteTask(idToPurge);
-            } else if (typeof window.archiveTask === 'function') {
-                window.archiveTask(idToPurge);
-            } else if (typeof archiveTask === 'function') {
-                archiveTask(idToPurge);
+            if (deleteBtn) {
+                // Instantly simulates the original working click functionality
+                deleteBtn.click();
             } else {
-                // FALLBACK GLOBAL MEMORY PURGE: Searches local state configurations
-                const arrayKeys = ['tasks', 'taskList', 'allTasks', 'items'];
-                arrayKeys.forEach(key => {
-                    if (typeof window[key] !== 'undefined' && Array.isArray(window[key])) {
-                        window[key] = window[key].filter(t => String(t.id) !== String(idToPurge));
-                        localStorage.setItem(key, JSON.stringify(window[key]));
-                    }
-                });
+                // Secondary Fallback if click target is missing
+                const idToPurge = activeCard.dataset.id;
+                if (typeof deleteTask === 'function') deleteTask(idToPurge);
+                activeCard.remove();
             }
 
-            // INSTANT DOM ANIMATION REMOVAL (Guarantees the card visually disappears)
-            activeCard.style.transition = 'all 0.25s ease-out';
+            // Cleanly slide and shrink the card away visually
+            activeCard.style.transition = 'all 0.2s ease-out';
             activeCard.style.opacity = '0';
             activeCard.style.transform = 'scale(0.5)';
-            
-            setTimeout(() => {
-                activeCard.remove();
-                
-                // DYNAMIC METRIC REFRESHER: Triggers metrics counter re-calculations
-                const countUpdateFunctions = ['updateTaskCounts', 'updateMetrics', 'renderTasks', 'saveAndRender'];
-                countUpdateFunctions.forEach(fnName => {
-                    if (typeof window[fnName] === 'function') window[fnName]();
-                    else if (typeof globalThis[fnName] === 'function') globalThis[fnName]();
-                });
-            }, 250);
+            setTimeout(() => activeCard.remove(), 200);
         }
     });
 }
