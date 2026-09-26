@@ -643,18 +643,20 @@ function createTaskCard(task) {
         return isNaN(d.getTime()) ? 'Not Specified' : d.toLocaleString();
     };
 
-    // 1. Fully-formed, robust HTML card injection with absolute positioning and safe text barriers
+    // 1. Fully-formed, robust HTML card injection with rigid button spacing and protective text padding
     card.innerHTML = `
         <div class="task-card-inner" style="position: relative; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
             
-            <!-- Permanent Action Box: Anchored to Upper Right Corner -->
-            <div style="position: absolute; right: 12px; top: 12px; display: flex; gap: 10px; align-items: center; z-index: 99;">
-                <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 20px; height: 20px;">${editIcon}</button>
-                <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 22px; font-weight: bold; line-height: 1; color: #dc3545; opacity: 0.9; transition: transform 0.2s, opacity 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
+            <!-- Rigid Action Box: Permanently Anchored to Upper Right Corner -->
+            <div style="position: absolute; right: 14px; top: 14px; display: flex; gap: 12px; align-items: center; justify-content: flex-end; z-index: 99; min-width: 60px; height: 24px;">
+                <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #ffffff); opacity: 0.7; transition: opacity 0.2s; width: 24px; height: 24px; box-sizing: border-box; flex-shrink: 0;">
+                    <span style="display: flex; align-items: center; justify-content: center; width: 16px; height: 16px;">${editIcon}</span>
+                </button>
+                <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 0; margin: 0; font-size: 22px; font-weight: bold; line-height: 1; color: #dc3545; opacity: 0.9; transition: transform 0.2s, opacity 0.2s; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; flex-shrink: 0;">&times;</button>
             </div>
 
-            <!-- Content Area: Padding-Right guarantees text never reaches the buttons -->
-            <div style="padding-right: 55px; width: 100%; box-sizing: border-box;">
+            <!-- Content Area: Safe margin protects text layout from colliding with buttons -->
+            <div style="padding-right: 70px; width: 100%; box-sizing: border-box;">
                 <div class="card-display-view" style="width: 100%; display: block;">
                     <div class="card-directive" style="font-size: 15px; font-weight: 500; color: var(--text-primary, #ffffff); line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
                 </div>
