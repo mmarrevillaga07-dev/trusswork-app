@@ -595,25 +595,53 @@ function loadTasks() {
 
 // 9. Task Card Generation with Action Triggers & Time-Delta Badging Rules
 function createTaskCard(task) {
+    // Fail-safe default object configuration to protect against missing keys
+    const safeTask = {
+        id: task?.id || Date.now(),
+        directive: task?.directive || task?.task || task?.title || 'Untitled Task Directive',
+        department: task?.department || 'General',
+        createdTimestamp: task?.createdTimestamp || Date.now(),
+        deadline: task?.deadline || new Date(Date.now() + 86400000).toISOString() // default tomorrow
+    };
+
     const card = document.createElement('div');
     card.className = 'task-card';
     card.draggable = true;
-    card.dataset.id = task.id;
+    card.dataset.id = safeTask.id;
+    
+    // FORCE FULL-WIDTH STRETCHING AT THE ELEMENT LEVEL
+    card.style.width = '100%';
+    card.style.boxSizing = 'border-box';
 
-    let bClass = 'badge-safe', bText = 'SAFE';
-    if (task.status !== 'completed') {
-        const diff = new Date(task.deadline).getTime() - Date.now();
-        if (diff < 0) { 
-            bClass = 'badge-overdue'; 
-            bText = 'OVERDUE'; 
-        } else if (diff <= 24 * 60 * 60 * 1000) { 
-            bClass = 'badge-soon'; 
-            bText = 'DUE SOON'; 
+    let bClass = 'badge-safe';
+    let bText = 'SAFE';
+    
+    if (task?.status !== 'completed') {
+        try {
+            const deadlineTime = new Date(safeTask.deadline).getTime();
+            if (!isNaN(deadlineTime)) {
+                const diff = deadlineTime - Date.now();
+                if (diff < 0) {
+                    bClass = 'badge-overdue';
+                    bText = 'OVERDUE';
+                } else if (diff <= 24 * 60 * 60 * 1000) {
+                    bClass = 'badge-soon';
+                    bText = 'DUE SOON';
+                }
+            }
+        } catch (e) {
+            console.error("Date calculation error:", e);
         }
-    } else { 
-        // Define clean, fully string-safe black-and-white vector icons 
-    const editIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>`;
-    const saveIcon = `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: inherit;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
+    }
+
+    // Define clean, fully string-safe black-and-white vector icons
+    const editIcon = typeof window.editIcon !== 'undefined' ? window.editIcon : `<svg xmlns="http://w3.org" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+
+    // Format display dates safely
+    const formatLocDate = (val) => {
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? 'Not Specified' : d.toLocaleString();
+    };
 
     // 1. Fully-formed, robust HTML card injection with absolute sizing anchors
     card.innerHTML = `
@@ -621,26 +649,26 @@ function createTaskCard(task) {
             
             <!-- Sleek Action Box: Absolute Right-Aligned -->
             <div style="position: absolute; right: 8px; top: 12px; display: flex; gap: 10px; align-items: center; z-index: 99;">
-                <button class="card-edit-trigger" data-id="${task.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #ffffff; opacity: 0.7; transition: opacity 0.2s; width: 20px; height: 20px;">${editIcon}</button>
-                <button class="card-delete-trigger" data-id="${task.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 2px; font-size: 20px; line-height: 1; color: #ffffff; opacity: 0.6; transition: opacity 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                <button class="card-edit-trigger" data-id="${safeTask.id}" title="Edit Task" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; color: #ffffff; opacity: 0.7; transition: opacity 0.2s; width: 20px; height: 20px;">${editIcon}</button>
+                <button class="card-delete-trigger" data-id="${safeTask.id}" title="Archive Task" style="background: none; border: none; cursor: pointer; padding: 2px; font-size: 20px; line-height: 1; color: #ffffff; opacity: 0.6; transition: opacity 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
             </div>
 
             <!-- Main Task Body Fields -->
             <div class="card-display-view" style="width: 100%; display: block;">
-                <div class="card-directive" style="font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.4; word-break: break-word; white-space: normal;">${task.directive || task.task || 'Untitled Directive'}</div>
+                <div class="card-directive" style="font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.4; word-break: break-word; white-space: normal;">${safeTask.directive}</div>
             </div>
             
             <div class="card-edit-view" style="display: none; width: 100%;">
-                <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${task.directive || task.task || ''}</textarea>
+                <textarea class="card-directive-input" style="width: 100%; min-height: 60px; resize: vertical; padding: 6px; font-family: inherit; font-size: 14px; background: rgba(0, 0, 0, 0.3); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; outline: none; box-sizing: border-box;">${safeTask.directive}</textarea>
             </div>
 
-            <div class="card-dept" style="font-size: 13px; opacity: 0.6; color: #ffffff; margin-top: 2px;">${task.department || 'General'}</div>
+            <div class="card-dept" style="font-size: 13px; opacity: 0.6; color: #ffffff; margin-top: 2px;">${safeTask.department}</div>
             <div class="card-badge ${bClass}" style="width: max-content; margin-top: 4px;">${bText}</div>
             
             <!-- Bottom Footer Trackers -->
             <div style="font-size: 11px; color: #aaaaaa; margin-top: 8px; display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 6px; width: 100%;">
-                <div><span style="opacity: 0.5;">Created:</span> ${task.createdTimestamp ? new Date(task.createdTimestamp).toLocaleString() : new Date().toLocaleString()}</div>
-                <div><span style="opacity: 0.5;">Deadline:</span> ${new Date(task.deadline).toLocaleString()}</div>
+                <div><span style="opacity: 0.5;">Created:</span> ${formatLocDate(safeTask.createdTimestamp)}</div>
+                <div><span style="opacity: 0.5;">Deadline:</span> ${formatLocDate(safeTask.deadline)}</div>
             </div>
         </div>
     `;
@@ -660,25 +688,22 @@ function createTaskCard(task) {
     // 4. Dual-Action Edit/Save Listener Integration
     if (editBtn) {
         editBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
 
             const isEditing = editView.style.display === 'block';
 
             if (!isEditing) {
-                // SWITCH TO EDIT MODE
                 displayView.style.display = 'none';
                 editView.style.display = 'block';
-                editBtn.innerHTML = saveIcon; // Dynamically swap vector graphic to disk
+                editBtn.innerHTML = saveIcon;
                 editBtn.title = 'Save Changes';
                 directiveInput.focus();
-                
-                // Move text cursor to the end of the text input area
+
                 const length = directiveInput.value.length;
                 directiveInput.setSelectionRange(length, length);
             } else {
-                // ATTEMPT CONTEXT SAVE MODE
                 const updatedText = directiveInput.value.trim();
-                
+
                 if (updatedText === '') {
                     alert('Task directive cannot be blank!');
                     return;
@@ -686,7 +711,6 @@ function createTaskCard(task) {
 
                 task.directive = updatedText;
 
-                // Persist updates to storage index indices permanently
                 if (typeof db !== 'undefined' && db) {
                     try {
                         const transaction = db.transaction(["tasks"], "readwrite");
@@ -695,12 +719,10 @@ function createTaskCard(task) {
 
                         request.onsuccess = () => {
                             console.log(`Trusswork Engine: Successfully updated directive text for ID [${task.id}]`);
-                            
-                            // Revert UI fields cleanly to read-only view
                             card.querySelector('.card-directive').textContent = updatedText;
                             displayView.style.display = 'block';
                             editView.style.display = 'none';
-                            editBtn.innerHTML = editIcon; // Revert graphic back to pen line vector
+                            editBtn.innerHTML = editIcon;
                             editBtn.title = 'Edit Task';
                         };
 
@@ -715,50 +737,37 @@ function createTaskCard(task) {
         });
     }
 
-        const deleteBtn = card.querySelector('.card-delete-trigger');
-        if (deleteBtn) {
+    const deleteBtn = card.querySelector('.card-delete-trigger');
+    if (deleteBtn) {
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            
+
             if (!window.archivedTasks) {
                 window.archivedTasks = [];
             }
-            
-            // 1. Push the task parameters into the active session memory tray
+
             window.archivedTasks.push(task);
-            
-            // 2. Visually slide the task card layout element off your columns array
             card.remove();
-            
-            // 3. UPDATE INDEXEDDB SO IT PERMANENTLY REMEMBERS THE DELETION
+
             if (typeof db !== 'undefined' && db) {
-                
-    if (typeof db !== 'undefined' && db) {
-    try {
-        const transaction = db.transaction(["tasks"], "readwrite");
-        const store = transaction.objectStore("tasks");
-        
-        // 1. First change the status of the task object in runtime memory
-        task.status = 'archived';
-        
-        // 2. Now save that updated task object safely into IndexedDB
-        const request = store.put(task);
-        
-        request.onsuccess = () => {
-            console.log("Trusswork Data Engine: Task successfully routed to temporary session trash tray in IndexedDB.");
-        };
-        
-        request.onerror = (error) => {
-            console.error("Failed to update database record status:", error);
-        };
-    } catch (error) {
-        console.error("Database transaction failed:", error);
-    }
+                try {
+                    const transaction = db.transaction(["tasks"], "readwrite");
+                    const store = transaction.objectStore("tasks");
+                    task.status = 'archived';
+                    const request = store.put(task);
 
-}
+                    request.onsuccess = () => {
+                        console.log("Trusswork Data Engine: Task successfully routed to temporary session trash tray in IndexedDB.");
+                    };
 
+                    request.onerror = (error) => {
+                        console.error("Failed to update database record status:", error);
+                    };
+                } catch (error) {
+                    console.error("Database transaction failed:", error);
+                }
             }
-            
+
             console.log("Task successfully routed to temporary session trash tray:", window.archivedTasks);
         });
     }
@@ -801,9 +810,6 @@ document.querySelectorAll('.board-column').forEach(col => {
         transaction.oncomplete = loadTasks;
     });
 });   
-    return card;
-
-};
 
 // Auto-evaluate timelines every 30 seconds 
 setInterval(loadTasks, 30000);

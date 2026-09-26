@@ -196,12 +196,15 @@ button, select {
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+    min-height: 150px;
     flex: 1;
 }
 
 .grid-view .card-list {
-    display: contents;
+    display: flex;
 }
 
 .task-card {
@@ -214,6 +217,7 @@ button, select {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    min-height: 80 px;
 }
 
 .task-card.dragging {
