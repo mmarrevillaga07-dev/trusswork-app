@@ -406,6 +406,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginInput = document.getElementById('gatekeeperPasscode');
     const lockBtn = document.getElementById('lockTerminalBtn');
     const exportBtn = document.getElementById('exportBtn');
+    const themeBtn = document.getElementById('themeToggleBtn');
+    if (themeBtn) {
+        themeBtn.onclick = () => { 
+            document.body.classList.toggle('dark-mode'); 
+            console.log("Trusswork Engine: Core UI appearance state toggled.");
+        };
+    }
 
     if (loginSubmit) loginSubmit.onclick = validatePasscode;
     if (lockBtn) lockBtn.onclick = lockTerminal;

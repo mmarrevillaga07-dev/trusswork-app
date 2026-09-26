@@ -13,6 +13,7 @@
     --badge-soon: #ffc107;
     --badge-overdue: #dc3545;
     --transition-speed: 0.25s;
+    --brand-tangerine: #ff6b35; /* Custom Corporate Tangerine Hex Definition */
 }
 
 /* Light Theme Variables Switch override */
@@ -33,6 +34,9 @@ body {
     color: var(--text-primary);
     transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Application Viewport Shielding Lock Mode */
@@ -40,21 +44,29 @@ body.app-locked #mainAppLayoutContainer {
     display: none !important;
 }
 
-/* 3. Agile Workspace Layout Columns */
-.board-container {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+/* Tangerine Brand Customizer Hook */
+.brand-tangerine-text {
+    color: var(--brand-tangerine) !important;
+    font-weight: bold;
 }
 
-.board-container.kanban-view {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+/* 3. Main Container Workspace Sizing Realignment (Fixes Overlap) */
+main#boardContainer {
+    display: none !important; /* Overwrites conflicting HTML inline styles */
+}
+
+/* Explicit layout targeting rules when Kanban view is designated */
+main#boardContainer.board-container.kanban-view {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 20px;
     padding: 20px 30px;
 }
 
-.board-container.grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+/* Explicit layout targeting rules when Grid view is designated */
+main#boardContainer.board-container.grid-view {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
     gap: 20px;
     padding: 20px 30px;
 }
@@ -122,4 +134,58 @@ body:not(.dark-mode) .task-card {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(128, 128, 128, 0.5);
+}
+
+/* 6. Footer Disclaimer Alignment Layout Box */
+footer.corporate-footer-track {
+    margin-top: auto;
+    background-color: var(--bg-surface);
+    border-top: 1px solid var(--border-color);
+    padding: 15px 30px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+}
+/* =========================================================================
+   🌗 INLINE STYLE OVERRIDE PROTOCOL (Forces Light Theme on Inline Elements)
+   ========================================================================= */
+
+body:not(.dark-mode) #mainAppLayoutContainer,
+body:not(.dark-mode) header,
+body:not(.dark-mode) section,
+body:not(.dark-mode) .board-column,
+body:not(.dark-mode) .task-card-inner,
+body:not(.dark-mode) footer.corporate-footer-track {
+    background-color: var(--bg-surface) !important;
+    background: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body:not(.dark-mode) #boardContainer {
+    background-color: var(--bg-primary) !important;
+}
+
+body:not(.dark-mode) select,
+body:not(.dark-mode) input,
+body:not(.dark-mode) textarea {
+    background-color: #ffffff !important;
+    color: #12141c !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+body:not(.dark-mode) .task-card-inner {
+    background: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+body:not(.dark-mode) .card-edit-trigger {
+    color: #12141c !important;
+}
+
+body:not(.dark-mode) .metric-badge {
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: #12141c !important;
 }
