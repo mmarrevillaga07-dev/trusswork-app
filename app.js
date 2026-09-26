@@ -1046,16 +1046,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// --- DRAG TO TRASH FUNCTIONALITY ---
+// --- DRAG TO TRASH FUNCTIONALITY (ROBUST MATCH) ---
 const trashTarget = document.getElementById('trashBin');
 
 if (trashTarget) {
     // 1. Highlight the trash bin when an active card is hovered over it
     trashTarget.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Required to allow a drop event to trigger
-        trashTarget.style.transform = 'scale(1.25)'; // Grows slightly for a responsive tactile feel
+        e.preventDefault(); // Critical to allow dropping
+        trashTarget.style.transform = 'scale(1.25)'; 
         trashTarget.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        trashTarget.style.boxShadow = '0 0 15px rgba(220, 53, 69, 0.6)'; // Soft red outer glow
+        trashTarget.style.boxShadow = '0 0 15px rgba(220, 53, 69, 0.6)'; 
     });
 
     // 2. Remove the highlight effects if the card is dragged away
@@ -1070,40 +1070,53 @@ if (trashTarget) {
         trashTarget.style.transform = 'scale(1)';
         trashTarget.style.boxShadow = 'none';
 
-        // Find the card being dragged (Make sure your dragstart handler adds the 'dragging' class)
+        // Find the element currently being dragged
         const activeCard = document.querySelector('.task-card.dragging');
         
         if (activeCard) {
+            // Find the ID string or numerical value
             const idToPurge = activeCard.dataset.id;
             
-            // Check if your app uses a built-in global tasks array or a delete function
+            // DYNAMIC DETECTOR: Checks your script's exact internal variables/functions
             if (typeof window.deleteTask === 'function') {
                 window.deleteTask(idToPurge);
-            } else if (typeof window.tasks !== 'undefined') {
-                // Core data fallback: filter array and sync storage
-                window.tasks = window.tasks.filter(t => String(t.id) !== String(idToPurge));
-                localStorage.setItem('tasks', JSON.stringify(window.tasks));
+            } else if (typeof deleteTask === 'function') {
+                deleteTask(idToPurge);
+            } else if (typeof window.archiveTask === 'function') {
+                window.archiveTask(idToPurge);
+            } else if (typeof archiveTask === 'function') {
+                archiveTask(idToPurge);
+            } else {
+                // FALLBACK GLOBAL MEMORY PURGE: Searches local state configurations
+                const arrayKeys = ['tasks', 'taskList', 'allTasks', 'items'];
+                arrayKeys.forEach(key => {
+                    if (typeof window[key] !== 'undefined' && Array.isArray(window[key])) {
+                        window[key] = window[key].filter(t => String(t.id) !== String(idToPurge));
+                        localStorage.setItem(key, JSON.stringify(window[key]));
+                    }
+                });
             }
 
-            // Instantly animate out and remove from interface DOM
-            activeCard.style.transition = 'all 0.2s ease-out';
+            // INSTANT DOM ANIMATION REMOVAL (Guarantees the card visually disappears)
+            activeCard.style.transition = 'all 0.25s ease-out';
             activeCard.style.opacity = '0';
-            activeCard.style.transform = 'scale(0.8)';
+            activeCard.style.transform = 'scale(0.5)';
             
             setTimeout(() => {
                 activeCard.remove();
                 
-                // Re-calculate the bottom summary panel totals if function exists
-                if (typeof window.updateTaskCounts === 'function') {
-                    window.updateTaskCounts();
-                } else if (typeof window.renderTasks === 'function') {
-                    window.renderTasks(); // Or force fresh redraw
-                }
-            }, 200);
-            
-            console.log(`Task ${idToPurge} successfully dropped into the trash bin.`);
+                // DYNAMIC METRIC REFRESHER: Triggers metrics counter re-calculations
+                const countUpdateFunctions = ['updateTaskCounts', 'updateMetrics', 'renderTasks', 'saveAndRender'];
+                countUpdateFunctions.forEach(fnName => {
+                    if (typeof window[fnName] === 'function') window[fnName]();
+                    else if (typeof globalThis[fnName] === 'function') globalThis[fnName]();
+                });
+            }, 250);
         }
     });
 }
+
+
+
 
 
