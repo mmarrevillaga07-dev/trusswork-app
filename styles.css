@@ -228,4 +228,35 @@ div[style*="background-color: rgb(26, 29, 41)"] button,
 div[style*="background-color: var(--bg-surface)"] button {
     flex: 0 0 auto !important; /* Prevents the Commit button from stretching awkwardly */
 }
+/* Target only the control panel wrapper, matching the width of the Kanban columns */
+section.task-control-panel {
+    max-width: none !important;
+    width: calc(100% - 60px) !important; 
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Style the form layout directly inside that specific section container */
+section.task-control-panel form {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 15px !important;
+    box-sizing: border-box !important;
+}
+
+/* Scale up the dropdown and date selector wrappers equally */
+section.task-control-panel form > div {
+    flex: 1 !important;
+    min-width: 140px !important;
+}
+
+/* Keep the Commit Task button at its regular size */
+section.task-control-panel button,
+section.task-control-panel [type="submit"] {
+    flex: 0 0 auto !important;
+}
+
 
