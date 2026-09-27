@@ -383,24 +383,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.appInitialized) return;
     window.appInitialized = true;
 
-    const boardContainer = document.getElementById('boardContainer');
-    const viewKanbanBtn = document.getElementById('viewKanbanBtn');
-    const viewGridBtn = document.getElementById('viewGridBtn');
+const viewGridBtn = document.getElementById('viewGridBtn');
+const viewKanbanBtn = document.getElementById('viewKanbanBtn');
+const boardContainer = document.querySelector('.board-container'); // Check your actual container selector
 
-    if (viewKanbanBtn && boardContainer) {
-        viewKanbanBtn.onclick = () => {
-            boardContainer.className = "board-container kanban-view";
-            viewKanbanBtn.classList.add('active');
-            if (viewGridBtn) viewGridBtn.classList.remove('active');
-        };
-    }
-    if (viewGridBtn && boardContainer) {
-        viewGridBtn.onclick = () => {
-            boardContainer.className = "board-container grid-view";
-            viewGridBtn.classList.add('active');
-            if (viewKanbanBtn) viewKanbanBtn.classList.remove('active');
-        };
-    }
+viewGridBtn.addEventListener('click', () => {
+    viewGridBtn.classList.add('active');
+    viewKanbanBtn.classList.remove('active');
+    
+    // Add a structural helper class to restructure the inner elements
+    boardContainer.classList.add('grid-view-active');
+    boardContainer.classList.remove('kanban-view-active');
+});
+
+viewKanbanBtn.addEventListener('click', () => {
+    viewKanbanBtn.classList.add('active');
+    viewGridBtn.classList.remove('active');
+    
+    boardContainer.classList.remove('grid-view-active');
+    boardContainer.classList.add('kanban-view-active');
+});
 
     const loginSubmit = document.getElementById('gatekeeperSubmitBtn');
     const loginInput = document.getElementById('gatekeeperPasscode');

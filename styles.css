@@ -15,6 +15,28 @@
     --transition-speed: 0.25s;
     --brand-tangerine: #ff6b35; /* Custom Corporate Tangerine Hex Definition */
 }
+/* When grid view is active, collapse column wrapper cards but keep task card fluid */
+.grid-view-active .board-column {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.grid-view-active .board-column h3 {
+    display: none !important;
+}
+
+/* Force inner tasks to expand dynamically into a multi-column standard dashboard layout */
+.grid-view-active #pendingList,
+.grid-view-active #activeList,
+.grid-view-active #doneList {
+    display: contents !important;
+}
+
+body.dark-mode {
+    --bg-primary: #090a0f;
+
 
 /* Light Theme Variables Switch override */
 body:not(.dark-mode) {
@@ -258,5 +280,4 @@ section.task-control-panel button,
 section.task-control-panel [type="submit"] {
     flex: 0 0 auto !important;
 }
-
 
