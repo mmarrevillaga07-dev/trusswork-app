@@ -202,6 +202,7 @@ section.task-control-panel {
     width: calc(100% - 60px) !important; 
     margin-left: auto !important;
     margin-right: auto !important;
+    box-sizing: border-box !important;
 }
 
 /* Ensure the inner elements flex and distribute cleanly across the newly wide panel */
@@ -212,23 +213,19 @@ div[style*="background-color: var(--bg-surface)"] form {
     justify-content: space-between !important;
     align-items: center !important;
     gap: 15px !important;
+    box-sizing: border-box !important;
 }
 
-/* 2. Style the main "Trusswork" Brand Header Text to use your Corporate Tangerine color variable */
-header h1, 
-header .brand-title,
-.navbar-brand {
-    color: var(--brand-tangerine) !important;
+/* 2. Optional: Adjust internal input wrappers to prevent them from staying tiny */
+div[style*="background-color: rgb(26, 29, 41)"] form > div,
+div[style*="background-color: var(--bg-surface)"] form > div {
+    flex: 1 !important; /* Forces individual control groups to scale up equally */
+    min-width: 120px !important; 
 }
 
-/* 3. Scale down and align the Trademark (™) icon so it matches seamlessly */
-header h1 span,
-header h1 sup,
-.brand-title sup,
-.navbar-brand sup {
-    font-size: 0.45em !important;      
-    font-weight: normal !important;    
-    vertical-align: super !important;  
-    margin-left: 2px !important;       
+/* 3. Keep the submit button at its natural or standard size */
+div[style*="background-color: rgb(26, 29, 41)"] button,
+div[style*="background-color: var(--bg-surface)"] button {
+    flex: 0 0 auto !important; /* Prevents the Commit button from stretching awkwardly */
 }
 
