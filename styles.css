@@ -189,3 +189,46 @@ body:not(.dark-mode) .metric-badge {
     background: rgba(0, 0, 0, 0.06) !important;
     color: #12141c !important;
 }
+
+/* =========================================================================
+   🔧 LINE 192: CUSTOM TRUSSWORK LAYOUT AND BRANDING PATCHES
+   ========================================================================= */
+
+/* 1. Extend the Commit Task Input Panel across the entire frame width */
+div[style*="background-color: rgb(26, 29, 41)"],
+div[style*="background-color: var(--bg-surface)"],
+section.task-control-panel {
+    max-width: none !important;
+    width: calc(100% - 60px) !important; 
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Ensure the inner elements flex and distribute cleanly across the newly wide panel */
+div[style*="background-color: rgb(26, 29, 41)"] form,
+div[style*="background-color: var(--bg-surface)"] form {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+/* 2. Style the main "Trusswork" Brand Header Text to use your Corporate Tangerine color variable */
+header h1, 
+header .brand-title,
+.navbar-brand {
+    color: var(--brand-tangerine) !important;
+}
+
+/* 3. Scale down and align the Trademark (™) icon so it matches seamlessly */
+header h1 span,
+header h1 sup,
+.brand-title sup,
+.navbar-brand sup {
+    font-size: 0.45em !important;      
+    font-weight: normal !important;    
+    vertical-align: super !important;  
+    margin-left: 2px !important;       
+}
+
