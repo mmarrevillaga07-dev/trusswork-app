@@ -250,10 +250,11 @@ div[style*="background-color: rgb(26, 29, 41)"] button,
 div[style*="background-color: var(--bg-surface)"] button {
     flex: 0 0 auto !important; /* Prevents the Commit button from stretching awkwardly */
 }
+
 /* Target only the control panel wrapper, matching the width of the Kanban columns */
 section.task-control-panel {
     max-width: none !important;
-    width: calc(100% - 60px) !important; 
+    width: calc(100% - 60px) !important;
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box !important;
@@ -280,4 +281,3 @@ section.task-control-panel button,
 section.task-control-panel [type="submit"] {
     flex: 0 0 auto !important;
 }
-
