@@ -284,19 +284,25 @@ section.task-control-panel [type="submit"] {
 
 /* Container Layout */
 .app-footer {
-  display: flex;
-  justify-content: space-between; /* Pushes group to the left, creator to the right */
-  align-items: center;
-  padding: 15px 30px;            /* Keeps elements comfortably away from the screen edge */
-  width: 100%;
-  box-sizing: border-box;
+  position: fixed;               /* Anchors the footer to the screen viewport */
+  bottom: 0;                     /* Locks it to the absolute bottom */
+  left: 0;                       /* Aligns it to the left edge */
+  width: 100%;                   /* Makes it span across the full viewport width */
+  height: 60px;                  /* Explicit height for layout consistency */
+  
+  display: flex !important;      /* Forces flexbox override */
+  justify-content: space-between;/* Separate left items from right items */
+  align-items: center;           /* Vertically centers all text items */
+  padding: 0 40px;               /* Solves the edge-of-frame issue safely */
+  box-sizing: border-box;        /* Keeps padding from breaking width calculation */
+  z-index: 1000;                 /* Places it on top of other content panels */
 }
 
 /* Combines copyright and links side-by-side */
 .footer-left-group {
   display: flex;
   align-items: center;
-  gap: 25px;                     /* Spacing between copyright text and your links */
+  gap: 25px;                     /* Creates a visible space after your copyright notice */
 }
 
 /* Spacing between individual links */
@@ -307,18 +313,18 @@ section.task-control-panel [type="submit"] {
 
 /* Link Styling */
 .footer-link {
-  color: #ffffff !important;     /* Plain white color font */
-  text-decoration: none;         /* Removes default underline */
+  color: #ffffff !important;     /* Hard override to guarantee plain white font */
+  text-decoration: none !important;
 }
 
 .footer-link:hover {
-  text-decoration: underline;    /* Adds subtle visual feedback on hover */
+  text-decoration: underline !important;
 }
 
 /* Right-side alignment adjustment */
 .footer-right {
-  margin-right: 90px;            /* Large margin to ensure the red trash bin never covers the text */
-  color: #ffffff;
+  margin-right: 90px !important; /* Pushes text leftward out of the trash bin's reach */
+  color: #ffffff !important;     /* Hard override to guarantee plain white font */
 }
 
 
