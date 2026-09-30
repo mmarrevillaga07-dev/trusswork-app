@@ -281,3 +281,6 @@ section.task-control-panel button,
 section.task-control-panel [type="submit"] {
     flex: 0 0 auto !important;
 }
+
+/* End of task-control-panel layout overrides */
+}
