@@ -282,5 +282,45 @@ section.task-control-panel [type="submit"] {
     flex: 0 0 auto !important;
 }
 
+/* Container Layout */
+.app-footer {
+  display: flex;
+  justify-content: space-between; /* Pushes group to the left, creator to the right */
+  align-items: center;
+  padding: 15px 30px;            /* Keeps elements comfortably away from the screen edge */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Combines copyright and links side-by-side */
+.footer-left-group {
+  display: flex;
+  align-items: center;
+  gap: 25px;                     /* Spacing between copyright text and your links */
+}
+
+/* Spacing between individual links */
+.footer-links {
+  display: flex;
+  gap: 15px;                     /* Spacing between About Us and Contact Us */
+}
+
+/* Link Styling */
+.footer-link {
+  color: #ffffff !important;     /* Plain white color font */
+  text-decoration: none;         /* Removes default underline */
+}
+
+.footer-link:hover {
+  text-decoration: underline;    /* Adds subtle visual feedback on hover */
+}
+
+/* Right-side alignment adjustment */
+.footer-right {
+  margin-right: 90px;            /* Large margin to ensure the red trash bin never covers the text */
+  color: #ffffff;
+}
+
+
 /* End of task-control-panel layout overrides */
 }
