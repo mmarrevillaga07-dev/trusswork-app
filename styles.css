@@ -67,7 +67,7 @@ body.app-locked #mainAppLayoutContainer {
 }
 
 /* Tangerine Brand Customizer Hook */
-.brand-tangerine-text {
+.brand-name {
     color: var(--brand-tangerine) !important;
     font-weight: bold;
 }
