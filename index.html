@@ -74,9 +74,59 @@
             background: rgba(255,255,255,0.1);
             border-radius: 4px;
         }
+
+        /* ==========================================================================
+           FIXED FOOTER LAYOUT CONTROLS 
+           ========================================================================== */
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 60px;
+            box-sizing: border-box;
+            
+            display: flex !important;
+            justify-content: space-between; /* Pushes left group and right creator apart */
+            align-items: center;           /* Vertically aligns text strings */
+            padding: 0 40px;               /* Pushes elements safely out from frame edges */
+            font-size: 13px;
+            color: var(--text-secondary);
+            z-index: 999;                  /* Keeps it sitting cleanly above background grids */
+        }
+
+        /* Clusters Copyright notice and link container alongside each other */
+        .footer-left-group {
+            display: flex;
+            align-items: center;
+            gap: 24px;                     /* Distinct separation after copyright text */
+        }
+
+        /* Holds individual menu items */
+        .footer-links {
+            display: flex;
+            gap: 16px;                     /* Intentional space between links */
+        }
+
+        /* Forces plain white font color styling */
+        .footer-link {
+            color: #ffffff !important;
+            text-decoration: none;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Pushes creator leftwards cleanly ahead of floating trash bin boundaries */
+        .footer-right {
+            margin-right: 90px !important;
+            color: #ffffff;
+        }
         
     </style>
 </head>
+
 <body class="app-locked">
 <!-- =================================================================== -->
     <!-- 🔒 SECURITY ARCHITECTURE GATEKEEPER LAYER                          -->
